@@ -1,0 +1,17 @@
+  for (int i = 0; i < DonHang.Rows.Count; i++)
+                    {
+                        row = DonHang.Rows[i];
+                        provider1.ExecuteNonQuery(CommandType.StoredProcedure, sqll, new SqlParameter { ParameterName = "@ID", Value = IDDonHang.ToString() },
+                                                                                     new SqlParameter { ParameterName = "@IDChiNhanh", Value = Access.ToString() },
+                                                                                     new SqlParameter { ParameterName = "@IDMenu", Value = row[0].ToString() },
+                                                                                     new SqlParameter { ParameterName = "@SoBan", Value = row[2].ToString() },
+                                                                                     new SqlParameter { ParameterName = "@SoLuong", Value = row[3].ToString() },
+                                                                                     new SqlParameter { ParameterName = "@Gia", Value = row[4].ToString() },
+                                                                                     new SqlParameter { ParameterName = "@NgayThang", Value = txt_Date.Text });
+                    }
+                    provider.Disconnect();
+                    provider1.Disconnect();
+                    MessageBox.Show("Thanh toán thành công!!");
+                }
+            }
+        }

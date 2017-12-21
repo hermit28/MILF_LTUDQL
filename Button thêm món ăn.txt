@@ -1,0 +1,29 @@
+﻿  private void btn_ThemMonAn_Click(object sender, EventArgs e)
+        {
+            if(txt_SoBan.Text == "")
+            {
+                MessageBox.Show("Xin hãy chọn số bàn và chú ý số lượng!!");
+            }
+            else
+            {
+                DataRow row = DonHang.NewRow();
+                row[0] = dataGridView_MenuChiNhanh.CurrentRow.Cells[0].Value;
+                row[1] = dataGridView_MenuChiNhanh.CurrentRow.Cells[1].Value;
+                row[2] = txt_SoBan.Text;
+                row[3] = numeric_SoLuong.Value;
+                row[4] = int.Parse(dataGridView_MenuChiNhanh.CurrentRow.Cells[3].Value.ToString()) * numeric_SoLuong.Value;
+                if (txt_Note.Text == "")
+                {
+                    row[5] = "Không có";
+                }
+                else
+                {
+                    row[5] = txt_Note.Text;
+                }
+                DonHang.Rows.Add(row);
+                data_view = new DataView(DonHang);
+                dataGridView_DonHang.DataSource = data_view;
+
+                txt_Note.Clear();
+            }
+        }
