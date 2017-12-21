@@ -1,7 +1,8 @@
 ﻿use QuanLyQuanAn
+ --Tạo bảng
 CREATE TABLE Account
 (
-	ID			varchar(50),
+	ID		varchar(50),
 	Password	varchar(50),
 	Note		varchar(100),
 	MaQuyen		int
@@ -10,11 +11,12 @@ CREATE TABLE Account
 )
 
 INSERT INTO Account
-VALUES	('a10.lucifer', '123456', null, 1),
-		('a10.lucifer1', '123456', null, 2),
-		('a10.lucifer2', '123456', null, 3),
-		('a10.lucifer3', '123456', null, 4)
-
+VALUES	('HoangKhang', '123456', null, 1),
+	('MinhHieu', '123456', null, 2),
+	('TuanKhoi', '123456', null, 3),
+	('NhatHuy', '123456', null, 4),
+	('LyHuynh', '123456', null, 4)
+	
 CREATE TABLE PhanQuyen
 (
 	MaQuyen		int,
@@ -99,6 +101,7 @@ CREATE TABLE ChiTietDonHang
 	PRIMARY KEY (ID, IDMenu)
 )
 
+--Tạo ràng buộc
 ALTER TABLE MenuChiNhanh
 ADD CONSTRAINT FK_MenuChiNhanh_MonAn
 FOREIGN KEY (IDMonAn)
