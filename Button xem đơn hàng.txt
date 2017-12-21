@@ -5,7 +5,7 @@
             {
                 MessageBox.Show("Xin hãy nhập đầy đủ dữ liệu!!");
             }
-            else if (int.Parse(txt_From.Text) < 1 || int.Parse(txt_From.Text) > 31 || int.Parse(txt_To.Text) < 1 || int.Parse(txt_To.Text) > 31)
+            else if (int.Parse(txt_From.Text) < 1 || int.Parse(txt_From.Text) > 31 || int.Parse(txt_To.Text) < 1 || int.Parse(txt_To.Text) > 31 || int.Parse(cbbox_Month.Text) > 12 || int.Parse(cbbox_Month.Text) < 1)
             {
                 MessageBox.Show("Xin hãy nhập chính xác ngày cần tìm đơn hàng!!");
             }
