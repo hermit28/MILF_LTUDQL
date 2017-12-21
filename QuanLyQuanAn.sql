@@ -9,13 +9,6 @@ CREATE TABLE Account
 	CONSTRAINT PK_Account
 	PRIMARY KEY (ID)
 )
-
-INSERT INTO Account
-VALUES	('HoangKhang', '123456', null, 1),
-	('MinhHieu', '123456', null, 2),
-	('TuanKhoi', '123456', null, 3),
-	('NhatHuy', '123456', null, 4),
-	('LyHuynh', '123456', null, 4)
 	
 CREATE TABLE PhanQuyen
 (
@@ -24,10 +17,6 @@ CREATE TABLE PhanQuyen
 	CONSTRAINT PK_PhanQuyen
 	PRIMARY KEY (MaQuyen)
 )
-
-INSERT INTO PhanQuyen
-VALUES (1, N'Nhân viên Milf1'), (2, N'Nhân viên Milf2'), (3, N'Nhân viên Milf3'),
-	   (4, N'Quản lý')
 
 CREATE TABLE MonAn
 (
@@ -38,13 +27,6 @@ CREATE TABLE MonAn
 	CONSTRAINT PK_MonAn
 	PRIMARY KEY (ID)
 )
-
-INSERT INTO MonAn
-VALUES ('1', N'Beefsteak', N'Bò', 60),
-	   ('2', N'Cánh gà chiên nước mắm', N'Gà', 60),
-	   ('3', N'Cơm chiên dương châu', N'Cơm', 60),
-	   ('4', N'Mực xào dòn', N'Mực', 60),
-	   ('5', N'Nước suối', N'Giải khát', 10)
 
 CREATE TABLE ChiNhanh
 (
@@ -58,11 +40,6 @@ CREATE TABLE ChiNhanh
 	PRIMARY KEY (ID)
 )
 
-INSERT INTO ChiNhanh
-VALUES ('1', N'Milf 1', N'51/1b Ấp Hậu Lân, Hóc Môn', 'Tp.Hồ Chí Minh', '123456', '10 bàn/4 người'),
-	   ('2', N'Milf 2', N'252 Nguyễn Văn Cừ, Quận 5', 'Tp.Hồ Chí Minh', '123456', '10 bàn/4 người'),
-	   ('3', N'Milf 3', N'111 Bình Thới, Quận 11', 'Tp.Hồ Chí Minh', '123456', '10 bàn/4 người')
-
 CREATE TABLE MenuChiNhanh
 (
 	IDChiNhanh	varchar(10),
@@ -71,11 +48,6 @@ CREATE TABLE MenuChiNhanh
 	CONSTRAINT PK_MenuChiNhanh
 	PRIMARY KEY (IDChiNhanh, IDMonAn)
 )
-
-INSERT INTO MenuChiNhanh
-VALUES	('1','1', 50), ('1','2', 50), ('1','3', 50),
-		('2','3', 40), ('2','4', 40), ('2','5', 40),
-		('3','5', 30), ('3','6', 30), ('3','7', 30)
 
 CREATE TABLE DonHang
 (
@@ -112,6 +84,38 @@ ADD CONSTRAINT FK_MenuChiNhanh_ChiNhanh
 FOREIGN KEY (IDChiNhanh)
 REFERENCES ChiNhanh
 
+--Thêm dữ liệu
+INSERT INTO Account
+VALUES	('HoangKhang', '123456', null, 1),
+	('MinhHieu', '123456', null, 2),
+	('TuanKhoi', '123456', null, 3),
+	('NhatHuy', '123456', null, 4),
+	('LyHuynh', '123456', null, 4)
+
+INSERT INTO PhanQuyen
+VALUES	(1, N'Nhân viên Milf1'), (2, N'Nhân viên Milf2'), (3, N'Nhân viên Milf3'),
+	(4, N'Quản lý')
+
+INSERT INTO MonAn
+VALUES 	('1', N'Beefsteak', N'Bò', 60),
+	('2', N'Cánh gà chiên nước mắm', N'Gà', 60),
+	('3', N'Cơm chiên dương châu', N'Cơm', 30),
+	('4', N'Mực xào dòn', N'Mực', 60),
+	('5', N'Nước suối', N'Giải khát', 10),
+	('6', N'Cơm sườn', N'Cơm', 25),
+	('7', N'Thỏ nướng', N'Thỏ', 60)
+
+INSERT INTO ChiNhanh
+VALUES 	('1', N'Milf 1', N'51/1b Ấp Hậu Lân, Hóc Môn', N'Tp.Hồ Chí Minh', '123456', 10),
+	('2', N'Milf 2', N'252 Hậu Nghĩa', N'Long An', '123456', 20),
+	('3', N'Milf 3', N'111 Bình Thới, Quận 11', N'Đồng Tháp', '123456', 15)
+
+INSERT INTO MenuChiNhanh
+VALUES	('1','1', 50), ('1','2', 50), ('1','3', 50),
+	('2','3', 40), ('2','4', 40), ('2','5', 40),
+	('3','5', 30), ('3','6', 30), ('3','7', 30)
+
+--Strore Procedure
 CREATE PROC sp_FindMaMonAn
 @ID varchar(10),
 @Outputt int out
