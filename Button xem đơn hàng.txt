@@ -1,7 +1,11 @@
 //Button Xem đơn hàng
         private void btn_XemDonHang_Click(object sender, EventArgs e)
         {
-            if (int.Parse(txt_From.Text) < 1 || int.Parse(txt_From.Text) > 31 || int.Parse(txt_To.Text) < 1 || int.Parse(txt_To.Text) > 31)
+            if(txt_From.Text == "" || txt_To.Text == "" || txt_Year.Text == "" || cbbox_Month.Text == "")
+            {
+                MessageBox.Show("Xin hãy nhập đầy đủ dữ liệu!!");
+            }
+            else if (int.Parse(txt_From.Text) < 1 || int.Parse(txt_From.Text) > 31 || int.Parse(txt_To.Text) < 1 || int.Parse(txt_To.Text) > 31)
             {
                 MessageBox.Show("Xin hãy nhập chính xác ngày cần tìm đơn hàng!!");
             }
@@ -25,10 +29,6 @@
                 {
                     MessageBox.Show("Tháng 2 chỉ có tối đa 29 ngày!!");
                 }
-            }
-            else if(txt_From.Text == "" || txt_To.Text == "" || txt_Year.Text == "" || cbbox_Month.Text == "")
-            {
-                MessageBox.Show("Xin hãy nhập đầy đủ dữ liệu!!");
             }
             else
             {
