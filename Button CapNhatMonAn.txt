@@ -1,0 +1,55 @@
+//Button c?p nh?t món an
+        private void button3_Click(object sender, EventArgs e)
+        {
+            if (Access == 4)
+            {
+                if (txt_danhmuc.Text == "" || txt_ID.Text == "" || txt_monan.Text == "" || txt_gia.Text == "")
+                {
+                    MessageBox.Show("Xin hãy ch?n món an d? c?p nh?t");
+                }
+                else
+                {
+                    MessageBoxButtons buttons = MessageBoxButtons.YesNo;
+                    DialogResult result;
+                    result = MessageBox.Show("B?n có mu?n s?a l?i d? li?u món an", "Notice!!", buttons);
+                    if (result == DialogResult.Yes)
+                    {
+                        string sqll = "sp_FindMaMonAn";
+                        provider.Connect();
+                        SqlParameter output = new SqlParameter("@Outputt", SqlDbType.Int);
+                        output.Direction = ParameterDirection.Output;
+                        provider.ExecuteNonQuery(CommandType.StoredProcedure, sqll, new SqlParameter { ParameterName = "@ID", Value = txt_ID.Text }, output);
+                        if (output.Value.ToString() == 0.ToString() || output.Value.ToString() == 1.ToString())
+                        {
+                            MessageBox.Show("Không th? thay d?i mã món an trong d? li?u!!");
+                            txt_ID.ReadOnly = true;
+                            txt_ID.Clear();
+                            txt_monan.Clear();
+                            txt_gia.Clear();
+                            txt_danhmuc.Clear();
+                        }
+                        else
+                        {
+                            string sql = "sp_UpdateMonAn";
+                            provider.ExecuteNonQuery(CommandType.StoredProcedure, sql, new SqlParameter { ParameterName = "@ID", Value = txt_ID.Text },
+                                                                                       new SqlParameter { ParameterName = "@Ten", Value = txt_monan.Text },
+                                                                                       new SqlParameter { ParameterName = "@Danhmuc", Value = txt_danhmuc.Text },
+                                                                                       new SqlParameter { ParameterName = "@Gia", Value = txt_gia.Text });
+                            dsMan = provider.Select(CommandType.Text, "SELECT * FROM MonAn");
+                            data_view = new DataView(dsMan);
+                            dataGridView2.DataSource = data_view;
+                        }
+                        provider.Disconnect();
+                        MessageBox.Show("C?p nh?t thành công", "Attention");
+                        txt_ID.Clear();
+                        txt_monan.Clear();
+                        txt_danhmuc.Clear();
+                        txt_gia.Clear();
+                    }
+                }
+            }
+            else
+            {
+                MessageBox.Show("B?n không có quy?n ch?nh s?a");
+            }
+        }
