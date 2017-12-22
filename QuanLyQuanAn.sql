@@ -13,17 +13,17 @@ CREATE TABLE Account
 CREATE TABLE PhanQuyen
 (
 	MaQuyen		int,
-	TenQuyen	varchar(50)
+	TenQuyen	nvarchar(50)
 	CONSTRAINT PK_PhanQuyen
 	PRIMARY KEY (MaQuyen)
 )
 
 CREATE TABLE MonAn
 (
-	ID			varchar(10),
-	Ten			varchar(50),
-	Danhmuc		varchar(10),
-	Gia			decimal
+	ID		varchar(10),
+	Ten		nvarchar(50),
+	Danhmuc		nvarchar(10),
+	Gia		decimal
 	CONSTRAINT PK_MonAn
 	PRIMARY KEY (ID)
 )
@@ -31,11 +31,11 @@ CREATE TABLE MonAn
 CREATE TABLE ChiNhanh
 (
 	ID				varchar(10),
-	TenChiNhanh		varchar(20),
-	DiaChi			varchar(50),
-	Tinh			varchar(50),
-	Sdt				int,
-	ThongTinBan		varchar(50)
+	TenChiNhanh		nvarchar(20),
+	DiaChi			nvarchar(50),
+	Tinh			nvarchar(50),
+	Sdt			int,
+	SoLuongBan		int
 	CONSTRAINT PK_ChiNhanh
 	PRIMARY KEY (ID)
 )
@@ -44,14 +44,14 @@ CREATE TABLE MenuChiNhanh
 (
 	IDChiNhanh	varchar(10),
 	IDMonAn		varchar(10),
-	Gia			decimal
+	Gia		decimal
 	CONSTRAINT PK_MenuChiNhanh
 	PRIMARY KEY (IDChiNhanh, IDMonAn)
 )
 
 CREATE TABLE DonHang
 (
-	ID			varchar(10),
+	ID		varchar(10),
 	IDChiNhanh	varchar(10),
 	TongCong	decimal,
 	NgayThang	date,
@@ -62,12 +62,12 @@ CREATE TABLE DonHang
 
 CREATE TABLE ChiTietDonHang
 (
-	ID			varchar(10),
+	ID		varchar(10),
 	IDChiNhanh	varchar(10),
 	IDMenu		varchar(10),
 	SoBan		int,
 	SoLuong		int,
-	Gia			decimal,
+	Gia		decimal,
 	NgayThang	date,
 	CONSTRAINT PK_ChiTietDonHang
 	PRIMARY KEY (ID, IDMenu)
