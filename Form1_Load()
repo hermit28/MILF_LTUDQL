@@ -7,6 +7,37 @@
     private Provider provider = new Provider();
     private void Form1_Load(object sender, EventArgs e)
     {
+           //Menu
+            dsMan = new DataTable();
+            dsMan.Columns.Add("ID");
+            dsMan.Columns.Add("Tên");
+            dsMan.Columns.Add("Danh m?c");
+            dsMan.Columns.Add("Giá");
+            string strSql = "Select * From MonAn";
+            provider.Connect();
+            dsMan = provider.Select(CommandType.Text, strSql);
+            data_view = new DataView(dsMan);
+            dataGridView2.DataSource = data_view;
+            dataGridView2.ReadOnly = true;
+
+            //Combobox Menu
+            cbbox_Danhmuc.Items.Add("T?t c?");
+            SqlDataReader reader = provider.GetReader(CommandType.Text, "SELECT Danhmuc FROM MonAn");
+            while (reader.Read())
+            {
+                cbbox_Danhmuc.Items.Add(reader[0]);
+            }
+            for (int i = 0; i < cbbox_Danhmuc.Items.Count; i++)
+            {
+                for (int j = i + 1; j < cbbox_Danhmuc.Items.Count; j++)
+                {
+                    if (cbbox_Danhmuc.Items[i].Equals(cbbox_Danhmuc.Items[j].ToString()))
+                    {
+                        cbbox_Danhmuc.Items.RemoveAt(j);
+                    }
+                }
+            }
+            provider.Disconnect();
          //Chi nhánh
             Provider provider1 = new Provider();
             provider1.Connect();
