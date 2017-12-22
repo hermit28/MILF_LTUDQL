@@ -1,6 +1,7 @@
  public partial class Form1 : Form
 {
     private DataTable BaoCaoDonHang;
+    private DataTable ChiTietDonHang;
     private void Form1_Load(object sender, EventArgs e)
     {
         //Báo cáo
@@ -19,5 +20,21 @@
         data_view = new DataView(BaoCaoDonHang);
         dataGridView_BaoCaoDonHang.DataSource = data_view;
         dataGridView_DonHang.ReadOnly = true;
+        
+        //Chi tiết đơn hàng
+        ChiTietDonHang = new DataTable();
+        ChiTietDonHang.Columns.Add("ID Đơn hàng");//Ẩn
+        ChiTietDonHang.Columns.Add("ID Chi nhánh");//Ẩn
+        ChiTietDonHang.Columns.Add("Tên món ăn");//IDMenu
+        ChiTietDonHang.Columns.Add("Số bàn");
+        ChiTietDonHang.Columns.Add("Số lượng");
+        ChiTietDonHang.Columns.Add("Giá");
+        ChiTietDonHang.Columns.Add("Ngày");//Ẩn
+        data_view = new DataView(ChiTietDonHang);
+        dataGridView_ChiTietDonHang.DataSource = data_view;
+        dataGridView_ChiTietDonHang.Columns[0].Visible = false;
+        dataGridView_ChiTietDonHang.Columns[1].Visible = false;
+        dataGridView_ChiTietDonHang.Columns[6].Visible = false;
+        dataGridView_ChiTietDonHang.ReadOnly = true;
     }
 }
