@@ -2,6 +2,8 @@
 {
     private DataTable BaoCaoDonHang;
     private DataTable ChiTietDonHang;
+    private DataView data_view;
+    private Provider provider = new Provider();
     private void Form1_Load(object sender, EventArgs e)
     {
         //Báo cáo
