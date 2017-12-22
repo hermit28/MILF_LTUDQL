@@ -1,0 +1,4 @@
+  private void dataGridView_MenuChiNhanh_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+            txt_TenMonAn.Text = dataGridView_MenuChiNhanh.CurrentRow.Cells[1].Value.ToString();
+        }

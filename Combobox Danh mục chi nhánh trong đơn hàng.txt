@@ -1,0 +1,95 @@
+﻿    private void cbbox_DanhMucChiNhanh_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            provider.Connect();
+            if (cbbox_DanhMucChiNhanh.Text == "Tất cả")
+            {
+                tableChiNhanh = new DataTable();
+                tableChiNhanh.Columns.Add("ID");
+                tableChiNhanh.Columns.Add("Tên");
+                tableChiNhanh.Columns.Add("Danh mục");
+                tableChiNhanh.Columns.Add("Giá");
+                Provider provider3 = new Provider();
+                provider3.Connect();
+                SqlDataReader reader3 = provider3.GetReader(CommandType.Text, "SELECT * FROM ChiNhanh");
+                while (reader3.Read())
+                {
+                    if (reader3[0].ToString() == Access.ToString())
+                    {
+                        Provider provider1 = new Provider();
+                        provider1.Connect();
+                        SqlDataReader reader1 = provider1.GetReader(CommandType.Text, "SELECT * FROM MenuChiNhanh");
+                        while (reader1.Read())
+                        {
+                            {
+                                Provider provider2 = new Provider();
+                                provider2.Connect();
+                                SqlDataReader reader2 = provider2.GetReader(CommandType.Text, "SELECT * FROM MonAn");
+                                while (reader2.Read())
+                                {
+                                    if (reader1[1].ToString() == reader2[0].ToString() && reader3[0].ToString() == reader1[0].ToString())
+                                    {
+                                        DataRow row = tableChiNhanh.NewRow();
+                                        row[0] = reader2[0];
+                                        row[1] = reader2[1];
+                                        row[2] = reader2[2];
+                                        row[3] = reader1[2];
+                                        tableChiNhanh.Rows.Add(row);
+                                    }
+                                }
+                                provider2.Disconnect();
+                            }
+                        }
+                        provider1.Disconnect();
+                    }
+                }
+                provider3.Disconnect();
+            }
+            else
+            {
+                tableChiNhanh = new DataTable();
+                tableChiNhanh.Columns.Add("ID");
+                tableChiNhanh.Columns.Add("Tên");
+                tableChiNhanh.Columns.Add("Danh mục");
+                tableChiNhanh.Columns.Add("Giá");
+                Provider provider3 = new Provider();
+                provider3.Connect();
+                SqlDataReader reader3 = provider3.GetReader(CommandType.Text, "SELECT * FROM ChiNhanh");
+                while (reader3.Read())
+                {
+                    if (reader3[0].ToString() == Access.ToString())
+                    {
+                        Provider provider1 = new Provider();
+                        provider1.Connect();
+                        SqlDataReader reader1 = provider1.GetReader(CommandType.Text, "SELECT * FROM MenuChiNhanh");
+                        while (reader1.Read())
+                        {
+                            {
+                                Provider provider2 = new Provider();
+                                provider2.Connect();
+                                SqlDataReader reader2 = provider2.GetReader(CommandType.Text, "SELECT * FROM MonAn");
+                                while (reader2.Read())
+                                {
+                                    if (reader1[1].ToString() == reader2[0].ToString() && reader3[0].ToString() == reader1[0].ToString() && reader2[2].ToString() == cbbox_DanhMucChiNhanh.Text)
+                                    {
+                                        DataRow row = tableChiNhanh.NewRow();
+                                        row[0] = reader2[0];
+                                        row[1] = reader2[1];
+                                        row[2] = reader2[2];
+                                        row[3] = reader1[2];
+                                        tableChiNhanh.Rows.Add(row);
+                                    }
+                                }
+                                provider2.Disconnect();
+                            }
+                        }
+                        provider1.Disconnect();
+                    }
+                }
+                provider3.Disconnect();
+            }
+            data_view = new DataView(tableChiNhanh);
+            dataGridView_MenuChiNhanh.DataSource = data_view;
+            dataGridView_MenuChiNhanh.ReadOnly = true;
+            dataGridView_MenuChiNhanh.Columns[0].Visible = false;
+            provider.Disconnect();
+        }
