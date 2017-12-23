@@ -1,0 +1,4 @@
+ provider1.ExecuteNonQuery(CommandType.StoredProcedure, sql, new SqlParameter { ParameterName = "@ID", Value = IDDonHang.ToString() },
+                                                                                    new SqlParameter { ParameterName = "@IDChiNhanh", Value = Access.ToString() },
+                                                                                    new SqlParameter { ParameterName = "@NgayThang", Value = txt_Date.Text },
+                                                                                    new SqlParameter { ParameterName = "@TongCong", Value = txt_TongCong.Text });
