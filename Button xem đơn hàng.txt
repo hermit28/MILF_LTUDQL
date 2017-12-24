@@ -1,66 +1,479 @@
-//Button Xem đơn hàng
+//Button Xem báo cáo
         private void btn_XemDonHang_Click(object sender, EventArgs e)
         {
-            if(txt_From.Text == "" || txt_To.Text == "" || txt_Year.Text == "" || cbbox_Month.Text == "")
+            if (cbbox_BaoCao.Text == "" || cbbox_BaoCaoChiNhanh.Text == "")
             {
-                MessageBox.Show("Xin hãy nhập đầy đủ dữ liệu!!");
+                MessageBox.Show("Xin hãy chọn loại báo cáo và chi nhánh để xem báo cáo!!");
             }
-            else if (int.Parse(txt_From.Text) < 1 || int.Parse(txt_From.Text) > 31 || int.Parse(txt_To.Text) < 1 || int.Parse(txt_To.Text) > 31 || int.Parse(cbbox_Month.Text) > 12 || int.Parse(cbbox_Month.Text) < 1)
-            {
-                MessageBox.Show("Xin hãy nhập chính xác ngày cần tìm đơn hàng!!");
-            }
-            else if (cbbox_Month.Text == 4.ToString() || cbbox_Month.Text == 6.ToString() || cbbox_Month.Text == 9.ToString() || cbbox_Month.Text == 11.ToString())
-            {
-                if(int.Parse(txt_From.Text) > 30 || int.Parse(txt_To.Text) > 30)
-                {
-                    MessageBox.Show("Tháng" + cbbox_Month.Text + " chỉ có 30 ngày!!");
-                }
-            }
-            else if(cbbox_Month.Text == 2.ToString())
-            {
-                if(int.Parse(txt_Year.Text) % 4 != 0 && int.Parse(txt_Year.Text) % 100 != 0)
-                {
-                    if(int.Parse(txt_From.Text) > 28 || int.Parse(txt_To.Text) > 28)
-                    {
-                        MessageBox.Show("Năm " + txt_Year.Text + " không nhuận nên Tháng 2 chỉ có 28 ngày!!");
-                    }
-                }
-                else if (int.Parse(txt_From.Text) > 29 || int.Parse(txt_To.Text) > 29)
-                {
-                    MessageBox.Show("Tháng 2 chỉ có tối đa 29 ngày!!");
-                }
-            }
-            else
+            else if (cbbox_BaoCao.Text == "Đơn hàng")
             {
                 provider.Connect();
-                int flag = 0;
-                string DateFrom = cbbox_Month.Text + "/" + txt_From.Text + "/" + txt_Year.Text;
-                string DateTo = cbbox_Month.Text + "/" + txt_To.Text + "/" + txt_Year.Text;
-                SqlDataReader reader = provider.GetReader(CommandType.Text, "SELECT * FROM DonHang");
-                while (reader.Read())
+                if (txt_Year.Text == "")
                 {
-                    string temp = reader[3].ToString();
-                    if (temp.Contains(DateFrom) == true || temp.Contains(DateTo) == true)
-                    {
-                        DataRow row = BaoCaoDonHang.NewRow();
-                        row[0] = reader[0];
-                        row[1] = reader[1];
-                        row[2] = reader[2];
-                        row[3] = reader[3];
-                        BaoCaoDonHang.Rows.Add(row);
-                        flag = 1;
-                    }
+                    MessageBox.Show("Xin hãy nhập dữ liệu để tìm đơn hàng!!");
                 }
-                if (flag == 0)
+                else if (txt_From.Text != "" && txt_To.Text != "" && cbbox_Month.Text != "" && txt_Year.Text != "")
                 {
-                    MessageBox.Show("Không có đơn hàng từ ngày " + DateFrom + " tới ngày" + DateTo);
-                }
-                else if(flag == 1)
-                {
+                    //Báo cáo đơn hàng
+                    BaoCaoDonHang = new DataTable();
+                    BaoCaoDonHang.Columns.Add("ID Đơn hàng");
+                    BaoCaoDonHang.Columns.Add("Tên chi nhánh");
+                    BaoCaoDonHang.Columns.Add("Tổng tiền");
+                    BaoCaoDonHang.Columns.Add("Ngày");
                     data_view = new DataView(BaoCaoDonHang);
                     dataGridView_BaoCaoDonHang.DataSource = data_view;
-                    dataGridView_BaoCaoDonHang.ReadOnly = true;
+                    dataGridView_DonHang.ReadOnly = true;
+
+                    //Chi tiết đơn hàng
+                    ChiTietDonHang = new DataTable();
+                    ChiTietDonHang.Columns.Add("ID Đơn hàng");//Ẩn
+                    ChiTietDonHang.Columns.Add("ID Chi nhánh");//Ẩn
+                    ChiTietDonHang.Columns.Add("Tên món ăn");//IDMenu
+                    ChiTietDonHang.Columns.Add("Số bàn");
+                    ChiTietDonHang.Columns.Add("Số lượng");
+                    ChiTietDonHang.Columns.Add("Giá");
+                    ChiTietDonHang.Columns.Add("Ngày");//Ẩn
+                    data_view = new DataView(ChiTietDonHang);
+                    dataGridView_ChiTietDonHang.DataSource = data_view;
+                    dataGridView_ChiTietDonHang.Columns[0].Visible = false;
+                    dataGridView_ChiTietDonHang.Columns[1].Visible = false;
+                    dataGridView_ChiTietDonHang.Columns[6].Visible = false;
+                    dataGridView_ChiTietDonHang.ReadOnly = true;
+                    if (int.Parse(txt_From.Text) < 1 || int.Parse(txt_From.Text) > 31 || int.Parse(txt_To.Text) < 1 || int.Parse(txt_To.Text) > 31 || int.Parse(cbbox_Month.Text) < 1 || int.Parse(cbbox_Month.Text) > 12)
+                    {
+                        MessageBox.Show("Xin hãy nhập đúng ngày tháng để tìm đơn hàng!!");
+                    }
+                    else if (cbbox_Month.Text == 4.ToString() || cbbox_Month.Text == 6.ToString() || cbbox_Month.Text == 9.ToString() || cbbox_Month.Text == 11.ToString())
+                    {
+                        if (int.Parse(txt_From.Text) > 30 || int.Parse(txt_To.Text) > 30)
+                        {
+                            MessageBox.Show("Tháng" + cbbox_Month.Text + " chỉ có 30 ngày!!");
+                        }
+                    }
+                    else if (cbbox_Month.Text == 2.ToString())
+                    {
+                        if (int.Parse(txt_Year.Text) % 4 != 0 && int.Parse(txt_Year.Text) % 100 != 0)
+                        {
+                            if (int.Parse(txt_From.Text) > 28 || int.Parse(txt_To.Text) > 28)
+                            {
+                                MessageBox.Show("Năm " + txt_Year.Text + " không nhuận nên Tháng 2 chỉ có 28 ngày!!");
+                            }
+                        }
+                        else if (int.Parse(txt_From.Text) > 29 || int.Parse(txt_To.Text) > 29)
+                        {
+                            MessageBox.Show("Tháng 2 chỉ có tối đa 29 ngày!!");
+                        }
+                    }
+                    else
+                    {
+                        int flag = 0;
+                        if (cbbox_BaoCaoChiNhanh.Text == "Tất cả")
+                        { 
+                            SqlDataReader reader = provider.GetReader(CommandType.Text, "SELECT * FROM DonHang");
+                            while (reader.Read())
+                            {
+                                if (int.Parse(reader[3].ToString()) >= int.Parse(txt_From.Text) && int.Parse(reader[3].ToString()) <= int.Parse(txt_To.Text) && int.Parse(cbbox_Month.Text) == int.Parse(reader[4].ToString()) && int.Parse(txt_Year.Text) == int.Parse(reader[5].ToString()))
+                                {
+                                    DataRow row = BaoCaoDonHang.NewRow();
+                                    row[0] = reader[0];
+                                    Provider provider2 = new Provider();
+                                    provider2.Connect();
+                                    SqlDataReader reader2 = provider2.GetReader(CommandType.Text, "SELECT * FROM ChiNhanh");
+                                    while (reader2.Read())
+                                    {
+                                        if (reader2[0].ToString() == reader[1].ToString())
+                                        {
+                                            row[1] = reader2[1];
+                                            break;
+                                        }
+                                    }
+                                    provider2.Disconnect();
+                                    row[2] = reader[2];
+                                    string Date = reader[3] + "/" + reader[4] + "/" + reader[5];
+                                    row[3] = Date;
+                                    BaoCaoDonHang.Rows.Add(row);
+                                    flag = 1;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            Provider provider2 = new Provider();
+                            provider2.Connect();
+                            SqlDataReader reader2 = provider2.GetReader(CommandType.Text, "SELECT * FROM ChiNhanh");
+                            SqlDataReader reader = provider.GetReader(CommandType.Text, "SELECT * FROM DonHang");
+                            while (reader2.Read())
+                            {
+                                while (reader.Read())
+                                {
+                                    if (reader2[1].ToString() == cbbox_BaoCaoChiNhanh.Text && reader[1].ToString() == reader2[0].ToString())
+                                    {
+                                        if (int.Parse(reader[3].ToString()) >= int.Parse(txt_From.Text) && int.Parse(reader[3].ToString()) <= int.Parse(txt_To.Text) && int.Parse(cbbox_Month.Text) == int.Parse(reader[4].ToString()) && int.Parse(txt_Year.Text) == int.Parse(reader[5].ToString()))
+                                        {
+                                            DataRow row = BaoCaoDonHang.NewRow();
+                                            row[0] = reader[0];
+                                            row[1] = cbbox_BaoCaoChiNhanh.Text;
+                                            row[2] = reader[2];
+                                            string Date = reader[3] + "/" + reader[4] + "/" + reader[5];
+                                            row[3] = Date;
+                                            BaoCaoDonHang.Rows.Add(row);
+                                            flag = 1;
+                                        }
+                                    }
+                                }
+                            }
+                            provider2.Disconnect();
+                        }
+                        if (flag == 0)
+                        {
+                            MessageBox.Show("Không có đơn hàng trong ngày này");
+                        }
+                        else if (flag == 1)
+                        {
+                            data_view = new DataView(BaoCaoDonHang);
+                            dataGridView_BaoCaoDonHang.DataSource = data_view;
+                            dataGridView_BaoCaoDonHang.ReadOnly = true;
+                        }
+                    }
+                }
+                else if (cbbox_Month.Text != "" && txt_Year.Text != "")
+                {
+                    //Báo cáo đơn hàng
+                    BaoCaoDonHang = new DataTable();
+                    BaoCaoDonHang.Columns.Add("ID Đơn hàng");
+                    BaoCaoDonHang.Columns.Add("Tên chi nhánh");
+                    BaoCaoDonHang.Columns.Add("Tổng tiền");
+                    BaoCaoDonHang.Columns.Add("Tháng - Năm");
+                    data_view = new DataView(BaoCaoDonHang);
+                    dataGridView_BaoCaoDonHang.DataSource = data_view;
+                    dataGridView_DonHang.ReadOnly = true;
+
+                    //Chi tiết đơn hàng
+                    ChiTietDonHang = new DataTable();
+                    ChiTietDonHang.Columns.Add("ID Đơn hàng");//Ẩn
+                    ChiTietDonHang.Columns.Add("ID Chi nhánh");//Ẩn
+                    ChiTietDonHang.Columns.Add("Tên món ăn");//IDMenu
+                    ChiTietDonHang.Columns.Add("Số bàn");
+                    ChiTietDonHang.Columns.Add("Số lượng");
+                    ChiTietDonHang.Columns.Add("Giá");
+                    ChiTietDonHang.Columns.Add("Tháng - Năm");//Ẩn
+                    data_view = new DataView(ChiTietDonHang);
+                    dataGridView_ChiTietDonHang.DataSource = data_view;
+                    dataGridView_ChiTietDonHang.Columns[0].Visible = false;
+                    dataGridView_ChiTietDonHang.Columns[1].Visible = false;
+                    dataGridView_ChiTietDonHang.Columns[6].Visible = false;
+                    dataGridView_ChiTietDonHang.ReadOnly = true;
+                    if (int.Parse(cbbox_Month.Text) < 1 || int.Parse(cbbox_Month.Text) > 12)
+                    {
+                        MessageBox.Show("Xin hãy nhập đúng tháng để tìm đơn hàng!!");
+                    }
+                    else
+                    {                        
+                        int flag = 0;
+                        if (cbbox_BaoCaoChiNhanh.Text == "Tất cả")
+                        {
+                            SqlDataReader reader = provider.GetReader(CommandType.Text, "SELECT * FROM DonHang");
+                            while (reader.Read())
+                            {
+                                if (int.Parse(cbbox_Month.Text) == int.Parse(reader[4].ToString()) && int.Parse(txt_Year.Text) == int.Parse(reader[5].ToString()))
+                                {
+                                    DataRow row = BaoCaoDonHang.NewRow();
+                                    row[0] = reader[0];
+                                    Provider provider2 = new Provider();
+                                    provider2.Connect();
+                                    SqlDataReader reader2 = provider2.GetReader(CommandType.Text, "SELECT * FROM ChiNhanh");
+                                    while (reader2.Read())
+                                    {
+                                        if (reader2[0].ToString() == reader[1].ToString())
+                                        {
+                                            row[1] = reader2[1];
+                                            break;
+                                        }
+                                    }
+                                    provider2.Disconnect();
+                                    row[2] = reader[2];
+                                    string Date = reader[4] + "/" + reader[5];
+                                    row[3] = Date;
+                                    BaoCaoDonHang.Rows.Add(row);
+                                    flag = 1;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            Provider provider2 = new Provider();
+                            provider2.Connect();
+                            SqlDataReader reader2 = provider2.GetReader(CommandType.Text, "SELECT * FROM ChiNhanh");
+                            SqlDataReader reader = provider.GetReader(CommandType.Text, "SELECT * FROM DonHang");
+                            while (reader2.Read())
+                            {
+                                while (reader.Read())
+                                {
+                                    if (reader2[1].ToString() == cbbox_BaoCaoChiNhanh.Text && reader[1].ToString() == reader2[0].ToString())
+                                    {
+                                        if (int.Parse(cbbox_Month.Text) == int.Parse(reader[4].ToString()) && int.Parse(txt_Year.Text) == int.Parse(reader[5].ToString()))
+                                        {
+                                            DataRow row = BaoCaoDonHang.NewRow();
+                                            row[0] = reader[0];
+                                            row[1] = cbbox_BaoCaoChiNhanh.Text;
+                                            row[2] = reader[2];
+                                            string Date = reader[4] + "/" + reader[5];
+                                            row[3] = Date;
+                                            BaoCaoDonHang.Rows.Add(row);
+                                            flag = 1;
+                                        }
+                                    }
+                                }
+                            }
+                            provider2.Disconnect();
+                        }                        
+                        if (flag == 0)
+                        {
+                            MessageBox.Show("Không có đơn hàng trong tháng này");
+                        }
+                        else if (flag == 1)
+                        {
+                            data_view = new DataView(BaoCaoDonHang);
+                            dataGridView_BaoCaoDonHang.DataSource = data_view;
+                            dataGridView_BaoCaoDonHang.ReadOnly = true;
+                        }
+                    }
+                }
+                else if (txt_Year.Text != "")
+                {
+                    //Báo cáo đơn hàng
+                    BaoCaoDonHang = new DataTable();
+                    BaoCaoDonHang.Columns.Add("ID Đơn hàng");
+                    BaoCaoDonHang.Columns.Add("Tên chi nhánh");
+                    BaoCaoDonHang.Columns.Add("Tổng tiền");
+                    BaoCaoDonHang.Columns.Add("Năm");
+                    data_view = new DataView(BaoCaoDonHang);
+                    dataGridView_BaoCaoDonHang.DataSource = data_view;
+                    dataGridView_DonHang.ReadOnly = true;
+
+                    //Chi tiết đơn hàng
+                    ChiTietDonHang = new DataTable();
+                    ChiTietDonHang.Columns.Add("ID Đơn hàng");//Ẩn
+                    ChiTietDonHang.Columns.Add("ID Chi nhánh");//Ẩn
+                    ChiTietDonHang.Columns.Add("Tên món ăn");//IDMenu
+                    ChiTietDonHang.Columns.Add("Số bàn");
+                    ChiTietDonHang.Columns.Add("Số lượng");
+                    ChiTietDonHang.Columns.Add("Giá");
+                    ChiTietDonHang.Columns.Add("Năm");//Ẩn
+                    data_view = new DataView(ChiTietDonHang);
+                    dataGridView_ChiTietDonHang.DataSource = data_view;
+                    dataGridView_ChiTietDonHang.Columns[0].Visible = false;
+                    dataGridView_ChiTietDonHang.Columns[1].Visible = false;
+                    dataGridView_ChiTietDonHang.Columns[6].Visible = false;
+                    dataGridView_ChiTietDonHang.ReadOnly = true;
+                    int flag = 0;                    
+                    if (cbbox_BaoCaoChiNhanh.Text == "Tất cả")
+                    {                        
+                        SqlDataReader reader = provider.GetReader(CommandType.Text, "SELECT * FROM DonHang");
+                        while (reader.Read())
+                        {
+                            if (int.Parse(reader[5].ToString()) == int.Parse(txt_Year.Text))
+                            {
+                                DataRow row = BaoCaoDonHang.NewRow();
+                                row[0] = reader[0];
+                                Provider provider2 = new Provider();
+                                provider2.Connect();
+                                SqlDataReader reader2 = provider2.GetReader(CommandType.Text, "SELECT * FROM ChiNhanh");
+                                while (reader2.Read())
+                                {
+                                    if (reader2[0].ToString() == reader[1].ToString())
+                                    {
+                                        row[1] = reader2[1];
+                                        break;
+                                    }
+                                }
+                                provider2.Disconnect();
+                                row[2] = reader[2];
+                                row[3] = reader[5];
+                                BaoCaoDonHang.Rows.Add(row);
+                                flag = 1;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        Provider provider2 = new Provider();
+                        provider2.Connect();
+                        SqlDataReader reader2 = provider2.GetReader(CommandType.Text, "SELECT * FROM ChiNhanh");
+                        SqlDataReader reader = provider.GetReader(CommandType.Text, "SELECT * FROM DonHang");
+                        while (reader2.Read())
+                        {
+                            if (reader2[1].ToString() == cbbox_BaoCaoChiNhanh.Text)
+                            {
+                                while (reader.Read())
+                                {
+                                    if (reader[1].ToString() == reader2[0].ToString())
+                                    {
+                                        if (int.Parse(reader[5].ToString()) == int.Parse(txt_Year.Text))
+                                        {
+                                            DataRow row = BaoCaoDonHang.NewRow();
+                                            row[0] = reader[0];
+                                            if (reader2[0].ToString() == reader[1].ToString())
+                                            {
+                                                row[1] = reader2[1];
+                                            }
+                                            row[2] = reader[2];
+                                            row[3] = reader[5];
+                                            BaoCaoDonHang.Rows.Add(row);
+                                            flag = 1;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        provider2.Disconnect();
+                    }
+                    if (flag == 0)
+                    {
+                        MessageBox.Show("Không có đơn hàng trong năm này");
+                    }
+                    else if (flag == 1)
+                    {
+                        data_view = new DataView(BaoCaoDonHang);
+                        dataGridView_BaoCaoDonHang.DataSource = data_view;
+                        dataGridView_BaoCaoDonHang.ReadOnly = true;
+                    }
                 }
                 provider.Disconnect();
+            }
+            else if(cbbox_BaoCao.Text == "Món ăn")
+            {
+                if (txt_Year.Text == "" || cbbox_Month.Text == "")
+                {
+                    MessageBox.Show("Xin hãy nhập năm tháng để tìm số lượng món ăn đã bán trong tháng này!!");
+                }
+                else if (cbbox_Month.Text != "" && txt_Year.Text != "")
+                {
+                    if (int.Parse(cbbox_Month.Text) < 1 || int.Parse(cbbox_Month.Text) > 12)
+                    {
+                        MessageBox.Show("Xin hãy nhập đúng tháng để tìm số lượng món ăn đã bán trong tháng này!!");
+                    }
+                    else
+                    {                        
+                        int flag = 0;
+                        if (cbbox_BaoCaoChiNhanh.Text == "Tất cả")
+                        {
+                            //Báo cáo đơn hàng
+                            BaoCaoMonAn = new DataTable();
+                            BaoCaoMonAn.Columns.Add("ID món ăn");
+                            BaoCaoMonAn.Columns.Add("Tên món ăn");
+                            BaoCaoMonAn.Columns.Add("Số lượng");
+                            BaoCaoMonAn.Columns.Add("Tháng - Năm");
+                            data_view = new DataView(BaoCaoMonAn);
+                            dataGridView_BaoCaoDonHang.DataSource = data_view;
+                            dataGridView_BaoCaoDonHang.ReadOnly = true;
+                            provider.Connect();
+                            SqlDataReader reader = provider.GetReader(CommandType.Text, "SELECT * FROM ChiTietDonHang");
+                            while (reader.Read())
+                            {
+                                if (int.Parse(cbbox_Month.Text) == int.Parse(reader[8].ToString()) && int.Parse(txt_Year.Text) == int.Parse(reader[9].ToString()))
+                                {
+                                    DataRow row = BaoCaoMonAn.NewRow();
+                                    row[0] = reader[2];
+                                    Provider provider2 = new Provider();
+                                    provider2.Connect();
+                                    SqlDataReader reader2 = provider2.GetReader(CommandType.Text, "SELECT * FROM MonAn");
+                                    while (reader2.Read())
+                                    {
+                                        if (reader2[0].ToString() == reader[2].ToString())
+                                        {
+                                            row[1] = reader2[1];
+                                            break;
+                                        }                                        
+                                    }
+                                    provider2.Disconnect();
+                                    row[2] = reader[5];
+                                    string Date = reader[8] + "/" + reader[9];
+                                    row[3] = Date;
+                                    BaoCaoMonAn.Rows.Add(row);
+                                    flag = 1;
+                                }
+                            }
+                            provider.Disconnect();
+                        }
+                        else
+                        {
+                            //Báo cáo đơn hàng
+                            BaoCaoMonAn = new DataTable();
+                            BaoCaoMonAn.Columns.Add("ID món ăn");
+                            BaoCaoMonAn.Columns.Add("Tên món ăn");
+                            BaoCaoMonAn.Columns.Add("Số lượng");
+                            BaoCaoMonAn.Columns.Add("Tháng - Năm");
+                            data_view = new DataView(BaoCaoMonAn);
+                            dataGridView_BaoCaoDonHang.DataSource = data_view;
+                            dataGridView_BaoCaoDonHang.ReadOnly = true;
+                            Provider provider2 = new Provider();
+                            provider2.Connect();
+                            SqlDataReader reader2 = provider2.GetReader(CommandType.Text, "SELECT * FROM ChiNhanh");
+                            while (reader2.Read())
+                            {
+                                provider.Connect();
+                                SqlDataReader reader = provider.GetReader(CommandType.Text, "SELECT * FROM ChiTietDonHang");
+                                while (reader.Read())
+                                {
+                                    if (reader2[1].ToString() == cbbox_BaoCaoChiNhanh.Text && reader[1].ToString() == reader2[0].ToString())
+                                    {
+                                        if (int.Parse(cbbox_Month.Text) == int.Parse(reader[8].ToString()) && int.Parse(txt_Year.Text) == int.Parse(reader[9].ToString()))
+                                        {
+                                            DataRow row = BaoCaoMonAn.NewRow();
+                                            row[0] = reader[2];
+                                            Provider provider1 = new Provider();
+                                            provider1.Connect();
+                                            SqlDataReader reader1 = provider1.GetReader(CommandType.Text, "SELECT * FROM MonAn");
+                                            while(reader1.Read())
+                                            {
+                                                if(reader1[0].ToString() == reader[2].ToString())
+                                                {
+                                                    row[1] = reader1[1];
+                                                    break;
+                                                }
+                                            }
+                                            provider1.Disconnect();
+                                            row[2] = reader[5];
+                                            string Date = reader[8] + "/" + reader[9];
+                                            row[3] = Date;
+                                            BaoCaoMonAn.Rows.Add(row);
+                                            flag = 1;
+                                        }
+                                    }
+                                }
+                                provider.Disconnect();
+                            }
+                            provider2.Disconnect();
+                        }                        
+                        if (flag == 0)
+                        {
+                            MessageBox.Show("Không bán được món nào trong tháng này");
+                        }
+                        else if (flag == 1)
+                        {
+                            for (int i = 0; i < BaoCaoMonAn.Rows.Count; i++)
+                            {
+                                DataRow row = BaoCaoMonAn.Rows[i];
+                                for (int j = i + 1; j < BaoCaoMonAn.Rows.Count; j++)
+                                {
+                                    DataRow row2 = BaoCaoMonAn.Rows[j];
+                                    if (row[0].ToString() == row2[0].ToString() && row[3].ToString() == row2[3].ToString())
+                                    {
+                                        row[2] = int.Parse(row[2].ToString()) + int.Parse(row2[2].ToString());
+                                        BaoCaoMonAn.Rows[j].Delete();
+                                    }
+                                }
+                            }
+                            data_view = new DataView(BaoCaoMonAn);
+                            dataGridView_BaoCaoDonHang.DataSource = data_view;
+                            dataGridView_BaoCaoDonHang.ReadOnly = true;
+                        }
+                    }
+                }
+            }
+            else if(cbbox_BaoCao.Text == "Chi phí")
+            {
+
             }
         }
