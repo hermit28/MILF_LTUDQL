@@ -1,0 +1,27 @@
+private void button1_Click(object sender, EventArgs e)
+        {            
+            if (txt_ID.Text == "" || txt_Password.Text == "")
+            {
+                MessageBox.Show("Xin hãy nhập mật khẩu và tài khoản!!");
+            }
+            else
+            {
+                string sql = "sp_FindAccount";
+                provider.Connect();
+                SqlParameter output = new SqlParameter("@Output", SqlDbType.Int);
+                output.Direction = ParameterDirection.Output;
+                provider.ExecuteNonQuery(CommandType.StoredProcedure, sql, new SqlParameter { ParameterName = "@ID", Value = txt_Username.Text },
+                                                                           new SqlParameter { ParameterName = "@Password", Value = txt_Password.Text }, output);
+                if (output.Value.ToString() != 0.ToString())
+                {
+                    MessageBox.Show("Đăng nhập thành công");
+                    Access = int.Parse(output.Value.ToString());
+                }
+                else
+                {
+                    MessageBox.Show("Tài khoản hoặc mật khẩu không đúng!!");
+                    Access = 0;
+                }
+                provider.Disconnect();
+            }
+        }
