@@ -1,0 +1,55 @@
+private void button7_Click(object sender, EventArgs e)
+        {
+            if (Access == 4)
+            {
+                if (txt_IDChiNhanh.Text == "" || txt_TenChiNhanh.Text == "" || txt_ThongTinBanChiNhanh.Text == "" || txt_TinhThanhChiNhanh.Text == "" || txt_DiaChiChiNhanh.Text == "" || txt_SdtChiNhanh.Text == "")
+                {
+                    MessageBox.Show("Xin vui lòng nhập đầy đủ dữ liệu", "Attention!!");
+                }
+                else
+                {
+                    MessageBoxButtons buttons = MessageBoxButtons.YesNo;
+                    DialogResult result;
+                    result = MessageBox.Show("Bạn có muốn thêm chi nhánh?", "Attention!!", buttons);
+                    if (result == DialogResult.Yes)
+                    {
+                        string sql = "sp_AddChiNhanh";
+                        string sqll = "sp_FindMaChiNhanh";
+                        provider.Connect();
+                        SqlParameter output = new SqlParameter("@Outputt", SqlDbType.Int);
+                        output.Direction = ParameterDirection.Output;
+                        provider.ExecuteNonQuery(CommandType.StoredProcedure, sqll, new SqlParameter { ParameterName = "@ID", Value = txt_IDChiNhanh.Text }, output);
+                        if (output.Value.ToString() == 0.ToString())
+                        {
+                            MessageBox.Show("Mã chi nhánh đã có trong dữ liệu!!");
+                            txt_IDChiNhanh.Clear();
+                        }
+                        else
+                        {
+                            provider.ExecuteNonQuery(CommandType.StoredProcedure, sql, new SqlParameter { ParameterName = "@ID", Value = txt_IDChiNhanh.Text },
+                                                                                       new SqlParameter { ParameterName = "@Ten", Value = txt_TenChiNhanh.Text },
+                                                                                       new SqlParameter { ParameterName = "@DiaChi", Value = txt_DiaChiChiNhanh.Text },
+                                                                                       new SqlParameter { ParameterName = "@Tinh", Value = txt_TinhThanhChiNhanh.Text },
+                                                                                       new SqlParameter { ParameterName = "@Sdt", Value = txt_SdtChiNhanh.Text },
+                                                                                       new SqlParameter { ParameterName = "@ThongTinBan", Value = txt_ThongTinBanChiNhanh.Text });
+
+                            dsChiNhanh = provider.select(CommandType.Text, "SELECT * FROM ChiNhanh");
+                            data_view = new DataView(dsChiNhanh);
+                            dataGridView_ChiNhanh.DataSource = data_view;
+                            MessageBox.Show("Thêm thành công", "Attention");
+                            txt_IDChiNhanh.Clear();
+                            txt_TenChiNhanh.Clear();
+                            txt_ThongTinBanChiNhanh.Clear();
+                            txt_TinhThanhChiNhanh.Clear();
+                            txt_DiaChiChiNhanh.Clear();
+                            txt_SdtChiNhanh.Clear();
+                        }
+                    }
+                    provider.Disconnect();
+                }
+            }
+            else
+            {
+                MessageBox.Show("Bạn không có quyền chỉnh sửa");
+            }
+        }
