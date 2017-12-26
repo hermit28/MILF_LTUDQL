@@ -378,6 +378,50 @@ namespace WindowsFormsApp1
                         }
                     }
                     MessageBox.Show("Cập nhật thành công", "Attention");
+                    //Cập nhật lại menu chi nhánh
+                    tableChiNhanh = new DataTable();
+                    tableChiNhanh.Columns.Add("ID");
+                    tableChiNhanh.Columns.Add("Tên");
+                    tableChiNhanh.Columns.Add("Danh mục");
+                    tableChiNhanh.Columns.Add("Giá");
+                    SqlDataReader reader = provider.GetReader(CommandType.Text, "SELECT * FROM ChiNhanh");
+                    while (reader.Read())
+                    {
+                        if (reader[0].ToString() == ID.ToString())
+                        {
+                            label1.Text = reader[1].ToString();
+                            Provider provider1 = new Provider();
+                            provider1.Connect();
+                            SqlDataReader reader1 = provider1.GetReader(CommandType.Text, "SELECT * FROM MenuChiNhanh");
+                            while (reader1.Read())
+                            {
+                                {
+                                    Provider provider2 = new Provider();
+                                    provider2.Connect();
+                                    SqlDataReader reader2 = provider2.GetReader(CommandType.Text, "SELECT * FROM MonAn");
+                                    while (reader2.Read())
+                                    {
+                                        if (reader1[1].ToString() == reader2[0].ToString() && reader[0].ToString() == reader1[0].ToString())
+                                        {
+                                            DataRow row = tableChiNhanh.NewRow();
+                                            row[0] = reader2[0];
+                                            row[1] = reader2[1];
+                                            row[2] = reader2[2];
+                                            row[3] = reader1[2];
+                                            tableChiNhanh.Rows.Add(row);
+                                        }
+                                    }
+                                    provider2.Disconnect();
+                                }
+                            }
+                            provider1.Disconnect();
+                        }
+                    }
+                    view = new DataView(tableChiNhanh);
+                    dataGridView_ChiNhanh.DataSource = view;
+                    dataGridView_ChiNhanh.ReadOnly = true;
+                    dataGridView_ChiNhanh.Columns[0].Visible = false;
+                    provider.Disconnect();
                     txt_Danhmuc.Clear();
                     txt_Gia.Clear();
                     txt_Ten.Clear();
@@ -413,6 +457,50 @@ namespace WindowsFormsApp1
                         }
                     }
                     MessageBox.Show("Xóa thành công", "Attention");
+                    //Cập nhật lại menu chi nhánh
+                    tableChiNhanh = new DataTable();
+                    tableChiNhanh.Columns.Add("ID");
+                    tableChiNhanh.Columns.Add("Tên");
+                    tableChiNhanh.Columns.Add("Danh mục");
+                    tableChiNhanh.Columns.Add("Giá");
+                    SqlDataReader reader = provider.GetReader(CommandType.Text, "SELECT * FROM ChiNhanh");
+                    while (reader.Read())
+                    {
+                        if (reader[0].ToString() == ID.ToString())
+                        {
+                            label1.Text = reader[1].ToString();
+                            Provider provider1 = new Provider();
+                            provider1.Connect();
+                            SqlDataReader reader1 = provider1.GetReader(CommandType.Text, "SELECT * FROM MenuChiNhanh");
+                            while (reader1.Read())
+                            {
+                                {
+                                    Provider provider2 = new Provider();
+                                    provider2.Connect();
+                                    SqlDataReader reader2 = provider2.GetReader(CommandType.Text, "SELECT * FROM MonAn");
+                                    while (reader2.Read())
+                                    {
+                                        if (reader1[1].ToString() == reader2[0].ToString() && reader[0].ToString() == reader1[0].ToString())
+                                        {
+                                            DataRow row = tableChiNhanh.NewRow();
+                                            row[0] = reader2[0];
+                                            row[1] = reader2[1];
+                                            row[2] = reader2[2];
+                                            row[3] = reader1[2];
+                                            tableChiNhanh.Rows.Add(row);
+                                        }
+                                    }
+                                    provider2.Disconnect();
+                                }
+                            }
+                            provider1.Disconnect();
+                        }
+                    }
+                    view = new DataView(tableChiNhanh);
+                    dataGridView_ChiNhanh.DataSource = view;
+                    dataGridView_ChiNhanh.ReadOnly = true;
+                    dataGridView_ChiNhanh.Columns[0].Visible = false;
+                    provider.Disconnect();
                     txt_Danhmuc.Clear();
                     txt_Gia.Clear();
                     txt_Ten.Clear();
