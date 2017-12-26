@@ -1,0 +1,9 @@
+private void btn_RefreshChiNhanh_Click(object sender, EventArgs e)
+        {
+            txt_IDChiNhanh.Clear();
+            txt_TenChiNhanh.Clear();
+            txt_DiaChiChiNhanh.Clear();
+            txt_TinhThanhChiNhanh.Clear();
+            txt_SdtChiNhanh.Clear();
+            txt_ThongTinBanChiNhanh.Clear();
+        }
