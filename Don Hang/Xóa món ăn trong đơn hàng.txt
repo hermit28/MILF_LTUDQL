@@ -1,0 +1,33 @@
+//Button Xóa món an trong don hàng
+        private void button5_Click(object sender, EventArgs e)
+        {
+            if (Access == 0)
+            {
+                MessageBox.Show("B?n không ph?i nhân viên c?a quán");
+            }
+            else
+            {
+                if (txt_TenMonAnDonHang.Text == "")
+                {
+                    MessageBox.Show("Xin hãy ch?n món an trong don hàng d? xóa!!");
+                }
+                else
+                {
+                    MessageBoxButtons buttons = MessageBoxButtons.YesNo;
+                    DialogResult result;
+                    result = MessageBox.Show("B?n có mu?n xóa?", "Attention!!", buttons);
+                    if (result == DialogResult.Yes)
+                    {
+                        for (int i = 0; i < DonHang.Rows.Count; i++)
+                        {
+                            DataRow row = DonHang.Rows[i];
+                            if (dataGridView_DonHang.CurrentRow.Cells[0].Value.ToString() == row[0].ToString())
+                            {
+                                DonHang.Rows[i].Delete();
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
