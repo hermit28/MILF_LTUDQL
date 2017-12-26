@@ -1,6 +1,0 @@
- private void btn_Refesh_Click(object sender, EventArgs e)
-        {
-            DonHang.Clear();
-            txt_SoBan.Clear();
-            txt_Note.Clear();
-        }
