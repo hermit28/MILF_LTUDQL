@@ -1,0 +1,36 @@
+//Combobox Danh m?c món an
+        private void cbbox_Danhmuc_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            provider.Connect();
+            if (cbbox_Danhmuc.Text == "T?t c?")
+            {
+                dsMan = provider.select(CommandType.Text, "SELECT * FROM MonAn");
+                data_view = new DataView(dsMan);
+                dataGridView2.DataSource = data_view;
+            }
+            else
+            {
+                dsMan = new DataTable();
+                SqlDataReader reader = provider.GetReader(CommandType.Text, "SELECT * FROM MonAn");
+                dsMan = new DataTable();
+                dsMan.Columns.Add("ID");
+                dsMan.Columns.Add("Tên");
+                dsMan.Columns.Add("Danh m?c");
+                dsMan.Columns.Add("Giá");
+                while (reader.Read())
+                {
+                    DataRow row = dsMan.NewRow();
+                    if (reader[2].ToString() == cbbox_Danhmuc.Text)
+                    {
+                        row[0] = reader[0];
+                        row[1] = reader[1];
+                        row[2] = reader[2];
+                        row[3] = reader[3];
+                        dsMan.Rows.Add(row);
+                    }
+                }
+                data_view = new DataView(dsMan);
+                dataGridView2.DataSource = data_view;
+            }
+            provider.Disconnect();
+        }
