@@ -1,0 +1,5 @@
+//DataGridView Ðon hàng
+        private void dataGridView_DonHang_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+            txt_TenMonAnDonHang.Text = dataGridView_DonHang.CurrentRow.Cells[1].Value.ToString();
+        }
