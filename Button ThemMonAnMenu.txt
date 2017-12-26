@@ -1,17 +1,16 @@
-//Button th�m m�n an
-        private void button2_Click(object sender, EventArgs e)
+  private void button2_Click(object sender, EventArgs e)
         {
             if (Access == 4)
             {
-                if (txt_ID.Text == "" || txt_monan.Text == "" || txt_danhmuc.Text == "" || txt_gia.Text == "")
+                if (txt_monan.Text == "" || txt_danhmuc.Text == "" || txt_gia.Text == "")
                 {
-                    MessageBox.Show("Xin vui l�ng nh?p d?y d? d? li?u", "Attention!!");
+                    MessageBox.Show("Xin vui lòng nhập đầy đủ dữ liệu", "Attention!!");
                 }
                 else
                 {
                     MessageBoxButtons buttons = MessageBoxButtons.YesNo;
                     DialogResult result;
-                    result = MessageBox.Show("B?n c� mu?n th�m m�n an?", "Attention!!", buttons);
+                    result = MessageBox.Show("Bạn có muốn thêm món ăn?", "Attention!!", buttons);
                     if (result == DialogResult.Yes)
                     {
                         string sql = "sp_AddMonAn";
@@ -22,12 +21,24 @@
                         provider.ExecuteNonQuery(CommandType.StoredProcedure, sqll, new SqlParameter { ParameterName = "@ID", Value = txt_ID.Text }, output);
                         if (output.Value.ToString() == 0.ToString())
                         {
-                            MessageBox.Show("M� m�n an d� c� trong d? li?u!!");
+                            MessageBox.Show("Mã món ăn đã có trong dữ liệu!!");
                             txt_ID.Clear();
+                            txt_monan.Clear();
+                            txt_danhmuc.Clear();
+                            txt_gia.Clear();
                         }
                         else
                         {
-                            provider.ExecuteNonQuery(CommandType.StoredProcedure, sql, new SqlParameter { ParameterName = "@ID", Value = txt_ID.Text },
+                            Provider provider1 = new Provider();
+                            provider1.Connect();
+                            SqlDataReader reader = provider1.GetReader(CommandType.Text, "SELECT ID FROM MonAn");
+                            while (reader.Read())
+                            {
+                                IDMenu = int.Parse(reader[0].ToString());
+                            }
+                            provider1.Disconnect();
+                            IDMenu++;
+                            provider.ExecuteNonQuery(CommandType.StoredProcedure, sql, new SqlParameter { ParameterName = "@ID", Value = IDMenu.ToString() },
                                                                                        new SqlParameter { ParameterName = "@Ten", Value = txt_monan.Text },
                                                                                        new SqlParameter { ParameterName = "@Danhmuc", Value = txt_danhmuc.Text },
                                                                                        new SqlParameter { ParameterName = "@Gia", Value = txt_gia.Text });
@@ -35,7 +46,7 @@
                             dsMan = provider.select(CommandType.Text, "SELECT * FROM MonAn");
                             data_view = new DataView(dsMan);
                             dataGridView2.DataSource = data_view;
-                            MessageBox.Show("Th�m th�nh c�ng", "Attention");
+                            MessageBox.Show("Thêm thành công", "Attention");
                             txt_ID.Clear();
                             txt_monan.Clear();
                             txt_danhmuc.Clear();
@@ -47,6 +58,6 @@
             }
             else
             {
-                MessageBox.Show("B?n kh�ng c� quy?n ch?nh s?a");
+                MessageBox.Show("Bạn không có quyền chỉnh sửa");
             }
         }
