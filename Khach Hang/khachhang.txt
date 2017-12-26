@@ -1,0 +1,188 @@
+//dataGridView khách hàng
+        private void dataGridView_KhachHang_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+            txt_KhachHang.Text = dataGridView_KhachHang.CurrentRow.Cells[0].Value.ToString();
+            txt_TenKhachHang.Text = dataGridView_KhachHang.CurrentRow.Cells[1].Value.ToString();
+            txt_DiaChiKhachHang.Text = dataGridView_KhachHang.CurrentRow.Cells[2].Value.ToString();
+            txt_SdtKhachHang.Text = dataGridView_KhachHang.CurrentRow.Cells[3].Value.ToString();
+            txt_TongTienKhachHang.Text = dataGridView_KhachHang.CurrentRow.Cells[4].Value.ToString();
+            provider.Connect();
+            SqlDataReader reader = provider.GetReader(CommandType.Text, "SELECT * FROM DonHang");
+            txt_Thang1.Text = 0.ToString();
+            txt_Thang2.Text = 0.ToString();
+            txt_Thang3.Text = 0.ToString();
+            txt_Thang4.Text = 0.ToString();
+            txt_Thang5.Text = 0.ToString();
+            txt_Thang6.Text = 0.ToString();
+            txt_Thang7.Text = 0.ToString();
+            txt_Thang8.Text = 0.ToString();
+            txt_Thang9.Text = 0.ToString();
+            txt_Thang10.Text = 0.ToString();
+            txt_Thang11.Text = 0.ToString();
+            txt_Thang12.Text = 0.ToString();
+            int Thang1 = 0, Thang2 = 0, Thang3 = 0, Thang4 = 0, Thang5 = 0, Thang6 = 0, Thang7 = 0, Thang8 = 0, Thang9 = 0, Thang10 = 0, Thang11 = 0, Thang12 = 0;
+            int TongDonHang = 0;            
+            if(txt_NamKhachHang.Text == "")
+            {
+                MessageBox.Show("Xin hãy nh?p nam");
+            }
+            while (reader.Read())
+            {
+                if(int.Parse(reader[2].ToString()) == int.Parse(txt_KhachHang.Text) && int.Parse(reader[6].ToString()) == int.Parse(txt_NamKhachHang.Text))
+                {
+                    TongDonHang++;
+                    if(int.Parse(reader[5].ToString()) == 1)
+                    {
+                        Thang1++;
+                        txt_Thang1.Text = (int.Parse(txt_Thang1.Text) + int.Parse(reader[3].ToString())).ToString();
+                    }
+                    else if (int.Parse(reader[5].ToString()) == 2)
+                    {
+                        Thang2++;
+                        txt_Thang2.Text = (int.Parse(txt_Thang2.Text) + int.Parse(reader[3].ToString())).ToString();
+                    }
+                    else if (int.Parse(reader[5].ToString()) == 3)
+                    {
+                        Thang3++;
+                        txt_Thang3.Text = (int.Parse(txt_Thang3.Text) + int.Parse(reader[3].ToString())).ToString();
+                    }
+                    else if (int.Parse(reader[5].ToString()) == 4)
+                    {
+                        Thang4++;
+                        txt_Thang4.Text = (int.Parse(txt_Thang4.Text) + int.Parse(reader[3].ToString())).ToString();
+                    }
+                    else if (int.Parse(reader[5].ToString()) == 5)
+                    {
+                        Thang5++;
+                        txt_Thang5.Text = (int.Parse(txt_Thang5.Text) + int.Parse(reader[3].ToString())).ToString();
+                    }
+                    else if (int.Parse(reader[5].ToString()) == 6)
+                    {
+                        Thang6++;
+                        txt_Thang6.Text = (int.Parse(txt_Thang6.Text) + int.Parse(reader[3].ToString())).ToString();
+                    }
+                    else if (int.Parse(reader[5].ToString()) == 7)
+                    {
+                        Thang7++;
+                        txt_Thang7.Text = (int.Parse(txt_Thang7.Text) + int.Parse(reader[3].ToString())).ToString();
+                    }
+                    else if (int.Parse(reader[5].ToString()) == 8)
+                    {
+                        Thang8++;
+                        txt_Thang8.Text = (int.Parse(txt_Thang8.Text) + int.Parse(reader[3].ToString())).ToString();
+                    }
+                    else if (int.Parse(reader[5].ToString()) == 9)
+                    {
+                        Thang9++;
+                        txt_Thang9.Text = (int.Parse(txt_Thang9.Text) + int.Parse(reader[3].ToString())).ToString();
+                    }
+                    else if (int.Parse(reader[5].ToString()) == 10)
+                    {
+                        Thang10++;
+                        txt_Thang10.Text = (int.Parse(txt_Thang10.Text) + int.Parse(reader[3].ToString())).ToString();
+                    }
+                    else if (int.Parse(reader[5].ToString()) == 11)
+                    {
+                        Thang11++;
+                        txt_Thang11.Text = (int.Parse(txt_Thang11.Text) + int.Parse(reader[3].ToString())).ToString();
+                    }
+                    else if (int.Parse(reader[5].ToString()) == 12)
+                    {
+                        Thang12++;
+                        txt_Thang12.Text = (int.Parse(txt_Thang12.Text) + int.Parse(reader[3].ToString())).ToString();
+                    }
+
+                }
+            }
+            if (Thang1 > 0)
+            {
+                txt_Thang1.Text += " - " + Thang1.ToString();
+            }
+            if (Thang2 > 0)
+            {
+                txt_Thang2.Text += " - " + Thang2.ToString();
+            }
+            if (Thang3 > 0)
+            {
+                txt_Thang3.Text += " - " + Thang3.ToString();
+            }
+            if (Thang4 > 0)
+            {
+                txt_Thang4.Text += " - " + Thang4.ToString();
+            }
+            if (Thang5 > 0)
+            {
+                txt_Thang5.Text += " - " + Thang5.ToString();
+            }
+            if (Thang6 > 0)
+            {
+                txt_Thang6.Text += " - " + Thang6.ToString();
+            }
+            if (Thang7 > 0)
+            {
+                txt_Thang7.Text += " - " + Thang7.ToString();
+            }
+            if (Thang8 > 0)
+            {
+                txt_Thang8.Text += " - " + Thang8.ToString();
+            }
+            if (Thang9 > 0)
+            {
+                txt_Thang9.Text += " - " + Thang9.ToString();
+            }
+            if (Thang10 > 0)
+            {
+                txt_Thang10.Text += " - " + Thang10.ToString();
+            }
+            if (Thang11 > 0)
+            {
+                txt_Thang11.Text += " - " + Thang11.ToString();
+            }
+            if (Thang12 > 0)
+            {
+                txt_Thang12.Text += " - " + Thang12.ToString();
+            }
+            txt_TongDonHangKhachHang.Text = TongDonHang.ToString();
+            provider.Disconnect();
+        }
+
+        //Tìm khách hàng
+        private void txt_TimKhachHang_TextChanged(object sender, EventArgs e)
+        {
+            provider.Connect();
+            SqlDataReader reader = provider.GetReader(CommandType.Text, "SELECT * FROM KhachHang");
+            KhachHang = new DataTable();
+            KhachHang.Columns.Add("ID khách hàng");
+            KhachHang.Columns.Add("Tên khách hàng");
+            KhachHang.Columns.Add("Ð?a ch?");
+            KhachHang.Columns.Add("S? di?n tho?i");
+            KhachHang.Columns.Add("T?ng ti?n");
+
+            while(reader.Read())
+            {
+                string temp1 = reader[0].ToString();
+                string temp2 = reader[1].ToString();
+                string temp3 = reader[2].ToString();
+                string temp4 = reader[3].ToString();
+                string temp5 = reader[4].ToString();
+                temp1.ToLower();
+                temp2.ToLower();
+                temp3.ToLower();
+                temp4.ToLower();
+                temp5.ToLower();
+                DataRow row = KhachHang.NewRow();
+                if (temp1.Contains(txt_TimKhachHang.Text) == true || temp2.Contains(txt_TimKhachHang.Text) == true || temp3.Contains(txt_TimKhachHang.Text) == true || temp4.Contains(txt_TimKhachHang.Text) == true)
+                {
+                    row[0] = reader[0];
+                    row[1] = reader[1];
+                    row[2] = reader[2];
+                    row[3] = reader[3];
+                    row[4] = reader[4];
+                    KhachHang.Rows.Add(row);
+                }
+            }
+            data_view = new DataView(KhachHang);
+            dataGridView_KhachHang.DataSource = data_view;
+            dataGridView_KhachHang.ReadOnly = true;
+            provider.Disconnect();
+        }
