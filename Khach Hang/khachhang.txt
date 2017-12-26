@@ -186,3 +186,81 @@
             dataGridView_KhachHang.ReadOnly = true;
             provider.Disconnect();
         }
+        //Button xóa khách hàng
+        private void btn_XoaKhachHang_Click(object sender, EventArgs e)
+        {
+            if (Access == 0)
+            {
+                MessageBox.Show("B?n không ph?i nhân viên c?a quán");
+            }
+            else
+            {
+                if (txt_SdtKhachHang.Text == "" || txt_TenKhachHang.Text == "" || txt_DiaChiKhachHang.Text == "")
+                {
+                    MessageBox.Show("Xin hãy ch?n khách hàng d? xóa!!");
+                }
+                else
+                {
+                    MessageBoxButtons buttons = MessageBoxButtons.YesNo;
+                    DialogResult result;
+                    result = MessageBox.Show("B?n có mu?n xóa khách hàng?", "Attention!!", buttons);
+                    if (result == DialogResult.Yes)
+                    {
+                        provider.Connect();
+                        string sql = "sp_DelKhachHang";
+                        provider.ExecuteNonQuery(CommandType.StoredProcedure, sql, new SqlParameter { ParameterName = "@ID", Value = txt_KhachHang.Text });
+                        MessageBox.Show("Xóa thành công!!");
+                        KhachHang = provider.Select(CommandType.Text, "SELECT * FROM KhachHang");
+                        data_view = new DataView(KhachHang);
+                        dataGridView_KhachHang.DataSource = data_view;
+                        txt_KhachHang.Clear();
+                        txt_TenKhachHang.Clear();
+                        txt_DiaChiKhachHang.Clear();
+                        txt_SdtKhachHang.Clear();
+                        txt_TongTienKhachHang.Clear();
+                        provider.Disconnect();
+                    }
+                }
+            }
+        }
+        //Button Cap nhat khách hàng
+        private void btn_CapNhatKhachHang_Click(object sender, EventArgs e)
+        {
+            if (Access == 0)
+            {
+                MessageBox.Show("B?n không ph?i nhân viên c?a quán");
+            }
+            else
+            {
+                if (txt_SdtKhachHang.Text == "" || txt_TenKhachHang.Text == "" || txt_DiaChiKhachHang.Text == "")
+                {
+                    MessageBox.Show("Xin hãy ch?n khách hàng d? s?a!!");
+                }
+                else
+                {
+                    MessageBoxButtons buttons = MessageBoxButtons.YesNo;
+                    DialogResult result;
+                    result = MessageBox.Show("B?n có mu?n s?a thông tin khách hàng?", "Attention!!", buttons);
+                    if (result == DialogResult.Yes)
+                    {
+                        provider.Connect();
+                        string sql = "sp_UpdateKhachHang";
+                        provider.ExecuteNonQuery(CommandType.StoredProcedure, sql, new SqlParameter { ParameterName = "@ID", Value = txt_KhachHang.Text },
+                                                                                   new SqlParameter { ParameterName = "@HoTen", Value = txt_TenKhachHang.Text },
+                                                                                   new SqlParameter { ParameterName = "@DiaChi", Value = txt_DiaChiKhachHang.Text },
+                                                                                   new SqlParameter { ParameterName = "@Sdt", Value = txt_SdtKhachHang.Text });
+                        MessageBox.Show("S?a thành công!!");
+                        KhachHang = provider.Select(CommandType.Text, "SELECT * FROM KhachHang");
+                        data_view = new DataView(KhachHang);
+                        dataGridView_KhachHang.DataSource = data_view;
+                        txt_KhachHang.Clear();
+                        txt_TenKhachHang.Clear();
+                        txt_DiaChiKhachHang.Clear();
+                        txt_SdtKhachHang.Clear();
+                        txt_TongTienKhachHang.Clear();
+                        provider.Disconnect();
+                    }
+                }
+            }
+        }
+        
