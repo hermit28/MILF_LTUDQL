@@ -1,0 +1,39 @@
+//Button c?p nh?t món an
+        private void button3_Click(object sender, EventArgs e)
+        {
+            if (Access == 4)
+            {
+                if (txt_danhmuc.Text == "" || txt_ID.Text == "" || txt_monan.Text == "" || txt_gia.Text == "")
+                {
+                    MessageBox.Show("Xin hãy ch?n món an d? c?p nh?t");
+                }
+                else
+                {
+                    MessageBoxButtons buttons = MessageBoxButtons.YesNo;
+                    DialogResult result;
+                    result = MessageBox.Show("B?n có mu?n s?a Sthông tin món an", "Notice!!", buttons);
+                    if (result == DialogResult.Yes)
+                    {
+                        provider.Connect();
+                        string sql = "sp_UpdateMonAn";
+                        provider.ExecuteNonQuery(CommandType.StoredProcedure, sql, new SqlParameter { ParameterName = "@ID", Value = txt_ID.Text },
+                                                                                   new SqlParameter { ParameterName = "@Ten", Value = txt_monan.Text },
+                                                                                   new SqlParameter { ParameterName = "@Danhmuc", Value = txt_danhmuc.Text },
+                                                                                   new SqlParameter { ParameterName = "@Gia", Value = txt_gia.Text });
+                        dsMan = provider.Select(CommandType.Text, "SELECT * FROM MonAn");
+                        data_view = new DataView(dsMan);
+                        dataGridView2.DataSource = data_view;
+                        provider.Disconnect();
+                        MessageBox.Show("C?p nh?t thành công", "Attention");
+                        txt_ID.Clear();
+                        txt_monan.Clear();
+                        txt_danhmuc.Clear();
+                        txt_gia.Clear();
+                    }
+                }
+            }
+            else
+            {
+                MessageBox.Show("B?n không có quy?n ch?nh s?a");
+            }
+        }
