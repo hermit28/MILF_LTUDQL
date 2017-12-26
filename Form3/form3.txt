@@ -1,0 +1,47 @@
+//Button Dang nhap
+        private void btn_DangNhap_Click(object sender, EventArgs e)
+        {
+            if (txt_Username.Text == "" || txt_Password.Text == "")
+            {
+                MessageBox.Show("Xin hãy nh?p m?t kh?u và tài kho?n!!");
+            }
+            else
+            {
+                int Access = 0;
+                Provider provider = new Provider();
+                string sql = "sp_FindAccount";
+                provider.Connect();
+                SqlParameter output = new SqlParameter("@Output", SqlDbType.Int);
+                output.Direction = ParameterDirection.Output;
+                provider.ExecuteNonQuery(CommandType.StoredProcedure, sql, new SqlParameter { ParameterName = "@ID", Value = txt_Username.Text },
+                                                                           new SqlParameter { ParameterName = "@Password", Value = txt_Password.Text }, output);
+                if (output.Value.ToString() != 0.ToString())
+                {
+                    MessageBox.Show("Ðang nh?p thành công");
+                    Access = int.Parse(output.Value.ToString());
+                    this.Hide();
+                    Form1 form1 = new Form1();
+                    form1.GetAccess(Access);
+                    form1.GetTenNhanVien(txt_Username.Text);
+                    form1.ShowDialog();                    
+                }
+                else
+                {
+                    MessageBox.Show("Tài kho?n ho?c m?t kh?u không dúng!!");
+                    Access = 0;
+                }
+                provider.Disconnect();
+            }
+        }
+
+//Button thoat chuong trinh
+        private void button1_Click(object sender, EventArgs e)
+        {
+            MessageBoxButtons buttons = MessageBoxButtons.OKCancel;
+            DialogResult result;
+            result = MessageBox.Show("B?n có mu?n thoát chuong trình?", "Attention!!", buttons);
+            if (result == DialogResult.OK)
+            {
+                Application.Exit();
+            }
+        }
