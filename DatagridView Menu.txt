@@ -1,8 +1,0 @@
-//DataGridView Menu
-private void dataGridView2_CellContentClick(object sender, DataGridViewCellEventArgs e)
-        {
-            txt_ID.Text = dataGridView2.CurrentRow.Cells[0].Value.ToString();
-            txt_monan.Text = dataGridView2.CurrentRow.Cells[1].Value.ToString();
-            txt_danhmuc.Text = dataGridView2.CurrentRow.Cells[2].Value.ToString();
-            txt_gia.Text = dataGridView2.CurrentRow.Cells[3].Value.ToString();
-        }
