@@ -1,6 +1,7 @@
  public partial class Form1 : Form
 {
     private DataTable dsMan; 
+    private DataTable dsChiNhanh;
     private DataTable BaoCaoDonHang;
     private DataTable ChiTietDonHang;
     private DataView data_view;
