@@ -1,0 +1,17 @@
+//Button Refresh trong báo cáo
+        private void btn_RefreshBaoCao_Click(object sender, EventArgs e)
+        {
+            if (Access != 4)
+            {
+                MessageBox.Show("B?n không ph?i qu?n lý");
+            }
+            else
+            {
+                txt_To.Clear();
+                txt_From.Clear();
+                cbbox_Month.Text = "";
+                txt_Year.Clear();
+                cbbox_BaoCao.Text = "";
+                cbbox_BaoCaoChiNhanh.Text = "";
+            }
+        }
