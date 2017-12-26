@@ -1,0 +1,66 @@
+//Button Xem đơn hàng
+        private void btn_XemDonHang_Click(object sender, EventArgs e)
+        {
+            if (int.Parse(txt_From.Text) < 1 || int.Parse(txt_From.Text) > 31 || int.Parse(txt_To.Text) < 1 || int.Parse(txt_To.Text) > 31)
+            {
+                MessageBox.Show("Xin hãy nhập chính xác ngày cần tìm đơn hàng!!");
+            }
+            else if (cbbox_Month.Text == 4.ToString() || cbbox_Month.Text == 6.ToString() || cbbox_Month.Text == 9.ToString() || cbbox_Month.Text == 11.ToString())
+            {
+                if(int.Parse(txt_From.Text) > 30 || int.Parse(txt_To.Text) > 30)
+                {
+                    MessageBox.Show("Tháng" + cbbox_Month.Text + " chỉ có 30 ngày!!");
+                }
+            }
+            else if(cbbox_Month.Text == 2.ToString())
+            {
+                if(int.Parse(txt_Year.Text) % 4 != 0 && int.Parse(txt_Year.Text) % 100 != 0)
+                {
+                    if(int.Parse(txt_From.Text) > 28 || int.Parse(txt_To.Text) > 28)
+                    {
+                        MessageBox.Show("Năm " + txt_Year.Text + " không nhuận nên Tháng 2 chỉ có 28 ngày!!");
+                    }
+                }
+                else if (int.Parse(txt_From.Text) > 29 || int.Parse(txt_To.Text) > 29)
+                {
+                    MessageBox.Show("Tháng 2 chỉ có tối đa 29 ngày!!");
+                }
+            }
+            else if(txt_From.Text == "" || txt_To.Text == "" || txt_Year.Text == "" || cbbox_Month.Text == "")
+            {
+                MessageBox.Show("Xin hãy nhập đầy đủ dữ liệu!!");
+            }
+            else
+            {
+                provider.Connect();
+                int flag = 0;
+                string DateFrom = cbbox_Month.Text + "/" + txt_From.Text + "/" + txt_Year.Text;
+                string DateTo = cbbox_Month.Text + "/" + txt_To.Text + "/" + txt_Year.Text;
+                SqlDataReader reader = provider.GetReader(CommandType.Text, "SELECT * FROM DonHang");
+                while (reader.Read())
+                {
+                    string temp = reader[3].ToString();
+                    if (temp.Contains(DateFrom) == true || temp.Contains(DateTo) == true)
+                    {
+                        DataRow row = BaoCaoDonHang.NewRow();
+                        row[0] = reader[0];
+                        row[1] = reader[1];
+                        row[2] = reader[2];
+                        row[3] = reader[3];
+                        BaoCaoDonHang.Rows.Add(row);
+                        flag = 1;
+                    }
+                }
+                if (flag == 0)
+                {
+                    MessageBox.Show("Không có đơn hàng từ ngày " + DateFrom + " tới ngày" + DateTo);
+                }
+                else if(flag == 1)
+                {
+                    data_view = new DataView(BaoCaoDonHang);
+                    dataGridView_BaoCaoDonHang.DataSource = data_view;
+                    dataGridView_BaoCaoDonHang.ReadOnly = true;
+                }
+                provider.Disconnect();
+            }
+        }
