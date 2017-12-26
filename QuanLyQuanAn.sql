@@ -185,6 +185,11 @@ INSERT INTO MenuChiNhanh
 VALUES	('1','1', 50), ('1','2', 50), ('1','3', 50),
 		('2','3', 40), ('2','4', 40), ('2','5', 40),
 		('3','5', 30), ('3','6', 30), ('3','7', 30)
+		
+INSERT INTO KhachHang
+VALUES ('1', N'Trần Minh Toàn', N'Q12', 1234567, 0),
+	   ('2', N'Trần Nhật Huy', N'Hóc Môn', 1234567, 0),
+	   ('3', N'Khách vãng lai', NULL, NULL, NULL)
 
 
 --Store Procedure
