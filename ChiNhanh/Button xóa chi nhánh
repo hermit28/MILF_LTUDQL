@@ -1,0 +1,38 @@
+  //Button xóa chi nhánh
+        private void button_XoaChiNhanh_Click(object sender, EventArgs e)
+        {
+            if (Access == 4)
+            {
+                if (txt_danhmuc.Text == "" || txt_ID.Text == "" || txt_monan.Text == "" || txt_gia.Text == "")
+                {
+                    MessageBox.Show("Xin hãy chọn chi nhánh để xóa");
+                }
+                else
+                {
+                    MessageBoxButtons buttons = MessageBoxButtons.YesNo;
+                    DialogResult result;
+                    result = MessageBox.Show("Bạn có muốn xóa?", "Attention!!", buttons);
+                    if (result == DialogResult.Yes)
+                    {
+                        string sql = "sp_DelChiNhanh";
+                        provider.Connect();
+                        provider.ExecuteNonQuery(CommandType.StoredProcedure, sql, new SqlParameter { ParameterName = "@ID", Value = txt_IDChiNhanh.Text });
+                        dsChiNhanh = provider.Select(CommandType.Text, "SELECT * FROM MonAn");
+                        data_view = new DataView(dsChiNhanh);
+                        dataGridView_ChiNhanh.DataSource = data_view;
+                        provider.Disconnect();
+                        MessageBox.Show("Xóa thành công", "Attention");
+                        txt_IDChiNhanh.Clear();
+                        txt_TenChiNhanh.Clear();
+                        txt_ThongTinBanChiNhanh.Clear();
+                        txt_TinhThanhChiNhanh.Clear();
+                        txt_DiaChiChiNhanh.Clear();
+                        txt_SdtChiNhanh.Clear();
+                    }
+                }
+            }
+            else
+            {
+                MessageBox.Show("Bạn không có quyền chỉnh sửa");
+            }
+        }
