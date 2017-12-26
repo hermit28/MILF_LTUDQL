@@ -1,1 +1,423 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using System.Data;
+using System.Data.SqlClient;
 
+namespace WindowsFormsApp1
+{
+    public partial class Form2 : Form
+    {
+        DataTable tableChiNhanh;
+        DataTable tableMenu;
+        DataView view;
+        Provider provider = new Provider();
+        private int ID;
+        public Form2(TextBox txt)
+        {
+            InitializeComponent();
+            provider.Connect();
+            //Menu chính
+            tableMenu = new DataTable();
+            tableMenu.Columns.Add("ID");
+            tableMenu.Columns.Add("Tên");
+            tableMenu.Columns.Add("Danh mục");
+            tableMenu.Columns.Add("Giá");
+            tableMenu = provider.Select(CommandType.Text, "SELECT * FROM MonAn");
+            view = new DataView(tableMenu);
+            dataGridView_Menu.DataSource = view;
+            dataGridView_Menu.Columns[0].Visible = false;
+            dataGridView_Menu.ReadOnly = true;
+
+            //Menu chi nhánh
+            tableChiNhanh = new DataTable();
+            tableChiNhanh.Columns.Add("ID");
+            tableChiNhanh.Columns.Add("Tên");
+            tableChiNhanh.Columns.Add("Danh mục");
+            tableChiNhanh.Columns.Add("Giá");
+            SqlDataReader reader = provider.GetReader(CommandType.Text, "SELECT * FROM ChiNhanh");
+            while (reader.Read())
+            {
+                if (reader[0].ToString() == txt.Text)
+                {
+                    label1.Text = reader[1].ToString();
+                    Provider provider1 = new Provider();
+                    provider1.Connect();
+                    SqlDataReader reader1 = provider1.GetReader(CommandType.Text, "SELECT * FROM MenuChiNhanh");
+                    while (reader1.Read())
+                    {
+                        {
+                            Provider provider2 = new Provider();
+                            provider2.Connect();
+                            SqlDataReader reader2 = provider2.GetReader(CommandType.Text, "SELECT * FROM MonAn");
+                            while (reader2.Read())
+                            {
+                                if (reader1[1].ToString() == reader2[0].ToString() && reader[0].ToString() == reader1[0].ToString())
+                                {
+                                    DataRow row = tableChiNhanh.NewRow();
+                                    row[0] = reader2[0];
+                                    row[1] = reader2[1];
+                                    row[2] = reader2[2];
+                                    row[3] = reader1[2];
+                                    tableChiNhanh.Rows.Add(row);
+                                }
+                            }
+                            provider2.Disconnect();
+                        }
+                    }
+                    provider1.Disconnect();
+                }
+            }
+            view = new DataView(tableChiNhanh);
+            dataGridView_ChiNhanh.DataSource = view;
+            dataGridView_ChiNhanh.Columns[0].Visible = false;
+            dataGridView_ChiNhanh.ReadOnly = true;
+
+            //Combobox Danh mục
+            cbbox_Danhmuc.Items.Add("Tất cả");
+            Provider provider3 = new Provider();
+            provider3.Connect();
+            SqlDataReader reader3 = provider3.GetReader(CommandType.Text, "SELECT Danhmuc FROM MonAn");
+            while (reader3.Read())
+            {
+                cbbox_Danhmuc.Items.Add(reader3[0]);
+            }
+            for (int i = 0; i < cbbox_Danhmuc.Items.Count; i++)
+            {
+                for (int j = i + 1; j < cbbox_Danhmuc.Items.Count; j++)
+                {
+                    if (cbbox_Danhmuc.Items[i].Equals(cbbox_Danhmuc.Items[j].ToString()))
+                    {
+                        cbbox_Danhmuc.Items.RemoveAt(j);
+                    }
+                }
+            }
+            provider3.Disconnect();
+            provider.Disconnect();
+        }
+        public Form2()
+        {
+            InitializeComponent();
+        }
+
+        public void IDChiNhanh(TextBox text)
+        {
+            ID = int.Parse(text.Text);
+        }
+
+        //DataGridView Chi nhánh Form2
+        private void dataGridView_ChiNhanh_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+            txt_TenMenuChiNhanh.Text = dataGridView_ChiNhanh.CurrentRow.Cells[1].Value.ToString();
+            txt_DanhMucMenuChiNhanh.Text = dataGridView_ChiNhanh.CurrentRow.Cells[2].Value.ToString();
+            txt_GiaMenuChiNhanh.Text = dataGridView_ChiNhanh.CurrentRow.Cells[3].Value.ToString();
+            provider.Connect();
+            SqlParameter output = new SqlParameter("@IDMenu", SqlDbType.VarChar, 10);
+            output.Direction = ParameterDirection.Output;
+            provider.ExecuteNonQuery(CommandType.StoredProcedure, "sp_FindIDMenuChiNhanh1", new SqlParameter { ParameterName = "@ID", Value = ID.ToString()},
+                                                                                            new SqlParameter { ParameterName = "@Ten", Value = txt_TenMenuChiNhanh.Text}, output);
+            txt_IDMenu.Text = output.Value.ToString();
+            provider.Disconnect();
+        }
+
+        //DataGridView Menu Form2
+        private void dataGridView_Menu_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+            txt_ID.Text = dataGridView_Menu.CurrentRow.Cells[0].Value.ToString();
+            txt_Ten.Text = dataGridView_Menu.CurrentRow.Cells[1].Value.ToString();
+            txt_Danhmuc.Text = dataGridView_Menu.CurrentRow.Cells[2].Value.ToString();
+            txt_Gia.Text = dataGridView_Menu.CurrentRow.Cells[3].Value.ToString();
+        }
+
+        private void cbbox_Danhmuc_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            provider.Connect();
+            if (cbbox_Danhmuc.Text == "Tất cả")
+            {
+                //Menu chính
+                tableMenu = provider.Select(CommandType.Text, "SELECT * FROM MonAn");
+
+                //Menu chi nhánh
+                tableChiNhanh = new DataTable();
+                tableChiNhanh.Columns.Add("ID");
+                tableChiNhanh.Columns.Add("Tên");
+                tableChiNhanh.Columns.Add("Danh mục");
+                tableChiNhanh.Columns.Add("Giá");
+                Provider provider3 = new Provider();
+                provider3.Connect();
+                SqlDataReader reader3 = provider3.GetReader(CommandType.Text, "SELECT * FROM ChiNhanh");
+                while (reader3.Read())
+                {
+                    if (reader3[0].ToString() == ID.ToString())
+                    {
+                        Provider provider1 = new Provider();
+                        provider1.Connect();
+                        SqlDataReader reader1 = provider1.GetReader(CommandType.Text, "SELECT * FROM MenuChiNhanh");
+                        while (reader1.Read())
+                        {
+                            {
+                                Provider provider2 = new Provider();
+                                provider2.Connect();
+                                SqlDataReader reader2 = provider2.GetReader(CommandType.Text, "SELECT * FROM MonAn");
+                                while (reader2.Read())
+                                {
+                                    if (reader1[1].ToString() == reader2[0].ToString() && reader3[0].ToString() == reader1[0].ToString())
+                                    {
+                                        DataRow row = tableChiNhanh.NewRow();
+                                        row[0] = reader2[0];
+                                        row[1] = reader2[1];
+                                        row[2] = reader2[2];
+                                        row[3] = reader1[2];
+                                        tableChiNhanh.Rows.Add(row);
+                                    }
+                                }
+                                provider2.Disconnect();
+                            }
+                        }
+                        provider1.Disconnect();
+                    }
+                }
+                provider3.Disconnect();
+            }
+            else
+            {
+                //Menu chính
+                tableMenu = new DataTable();
+                SqlDataReader reader = provider.GetReader(CommandType.Text, "SELECT * FROM MonAn");
+                tableMenu = new DataTable();
+                tableMenu.Columns.Add("ID");
+                tableMenu.Columns.Add("Tên");
+                tableMenu.Columns.Add("Danh mục");
+                tableMenu.Columns.Add("Giá");
+                while (reader.Read())
+                {
+                    DataRow row = tableMenu.NewRow();
+                    if (reader[2].ToString() == cbbox_Danhmuc.Text)
+                    {
+                        row[0] = reader[0];
+                        row[1] = reader[1];
+                        row[2] = reader[2];
+                        row[3] = reader[3];
+                        tableMenu.Rows.Add(row);
+                    }
+                }
+
+                //Menu chi nhánh
+                tableChiNhanh = new DataTable();
+                tableChiNhanh.Columns.Add("ID");
+                tableChiNhanh.Columns.Add("Tên");
+                tableChiNhanh.Columns.Add("Danh mục");
+                tableChiNhanh.Columns.Add("Giá");
+                Provider provider3 = new Provider();
+                provider3.Connect();
+                SqlDataReader reader3 = provider3.GetReader(CommandType.Text, "SELECT * FROM ChiNhanh");
+                while (reader3.Read())
+                {
+                    if (reader3[0].ToString() == ID.ToString())
+                    {
+                        Provider provider1 = new Provider();
+                        provider1.Connect();
+                        SqlDataReader reader1 = provider1.GetReader(CommandType.Text, "SELECT * FROM MenuChiNhanh");
+                        while (reader1.Read())
+                        {
+                            {
+                                Provider provider2 = new Provider();
+                                provider2.Connect();
+                                SqlDataReader reader2 = provider2.GetReader(CommandType.Text, "SELECT * FROM MonAn");
+                                while (reader2.Read())
+                                {
+                                    if (reader1[1].ToString() == reader2[0].ToString() && reader3[0].ToString() == reader1[0].ToString() && reader2[2].ToString() == cbbox_Danhmuc.Text)
+                                    {
+                                        DataRow row = tableChiNhanh.NewRow();
+                                        row[0] = reader2[0];
+                                        row[1] = reader2[1];
+                                        row[2] = reader2[2];
+                                        row[3] = reader1[2];
+                                        tableChiNhanh.Rows.Add(row);
+                                    }
+                                }
+                                provider2.Disconnect();
+                            }
+                        }
+                        provider1.Disconnect();
+                    }
+                }
+                provider3.Disconnect();
+            }
+            //Menu chính
+            view = new DataView(tableMenu);
+            dataGridView_Menu.DataSource = view;
+            dataGridView_Menu.Columns[0].Visible = false;
+            dataGridView_Menu.ReadOnly = true;
+
+            //Menu chi nhánh
+            view = new DataView(tableChiNhanh);
+            dataGridView_ChiNhanh.DataSource = view;
+            dataGridView_ChiNhanh.ReadOnly = true;
+            dataGridView_ChiNhanh.Columns[0].Visible = false;
+            provider.Disconnect();
+        }
+
+        //Button Thêm menu chi nhánh
+        private void btn_Them_Click(object sender, EventArgs e)
+        {
+            if (txt_Danhmuc.Text == "" || txt_Gia.Text == "" || txt_Ten.Text == "")
+            {
+                MessageBox.Show("Xin vui lòng chọn món ăn cần thêm", "Attention!!");
+            }
+            else
+            {
+                MessageBoxButtons buttons = MessageBoxButtons.YesNo;
+                DialogResult result;
+                result = MessageBox.Show("Bạn có muốn thêm món ăn này vào menu chi nhánh?", "Attention!!", buttons);
+                if (result == DialogResult.Yes)
+                {
+                    string sql = "sp_AddMenuChiNhanh";
+                    string sqll = "sp_FindIDMenuChiNhanh";
+                    provider.Connect();
+                    SqlParameter output = new SqlParameter("@Output", SqlDbType.Int);
+                    output.Direction = ParameterDirection.Output;
+                    provider.ExecuteNonQuery(CommandType.StoredProcedure, sqll, new SqlParameter { ParameterName = "@ID", Value = ID.ToString() },
+                                                                                new SqlParameter { ParameterName = "@IDMenu", Value = txt_ID.Text }, output);
+                    if (output.Value.ToString() == 0.ToString())
+                    {
+                        MessageBox.Show("Chi nhánh đã có món ăn này!!");
+                    }
+                    else
+                    {
+                        provider.ExecuteNonQuery(CommandType.StoredProcedure, sql,  new SqlParameter { ParameterName = "@ID", Value = ID.ToString() },
+                                                                                    new SqlParameter { ParameterName = "@IDMenu", Value = txt_ID.Text },
+                                                                                    new SqlParameter { ParameterName = "@Gia", Value = txt_Gia.Text });
+
+                        //Cập nhật lại menu chi nhánh
+                        tableChiNhanh = new DataTable();
+                        tableChiNhanh.Columns.Add("ID");
+                        tableChiNhanh.Columns.Add("Tên");
+                        tableChiNhanh.Columns.Add("Danh mục");
+                        tableChiNhanh.Columns.Add("Giá");
+                        SqlDataReader reader = provider.GetReader(CommandType.Text, "SELECT * FROM ChiNhanh");
+                        while (reader.Read())
+                        {
+                            if (reader[0].ToString() == ID.ToString())
+                            {
+                                label1.Text = reader[1].ToString();
+                                Provider provider1 = new Provider();
+                                provider1.Connect();
+                                SqlDataReader reader1 = provider1.GetReader(CommandType.Text, "SELECT * FROM MenuChiNhanh");
+                                while (reader1.Read())
+                                {
+                                    {
+                                        Provider provider2 = new Provider();
+                                        provider2.Connect();
+                                        SqlDataReader reader2 = provider2.GetReader(CommandType.Text, "SELECT * FROM MonAn");
+                                        while (reader2.Read())
+                                        {
+                                            if (reader1[1].ToString() == reader2[0].ToString() && reader[0].ToString() == reader1[0].ToString())
+                                            {
+                                                DataRow row = tableChiNhanh.NewRow();
+                                                row[0] = reader2[0];
+                                                row[1] = reader2[1];
+                                                row[2] = reader2[2];
+                                                row[3] = reader1[2];
+                                                tableChiNhanh.Rows.Add(row);
+                                            }
+                                        }
+                                        provider2.Disconnect();
+                                    }
+                                }
+                                provider1.Disconnect();
+                            }
+                        }
+                        view = new DataView(tableChiNhanh);
+                        dataGridView_ChiNhanh.DataSource = view;
+                        dataGridView_ChiNhanh.ReadOnly = true;
+                        dataGridView_ChiNhanh.Columns[0].Visible = false;
+                        provider.Disconnect();
+                        MessageBox.Show("Thêm thành công", "Attention");
+                        txt_Danhmuc.Clear();
+                        txt_Gia.Clear();
+                        txt_Ten.Clear();
+                    }
+                }
+                provider.Disconnect();
+            }
+        }
+
+        //Button Cập nhật menu chi nhánh
+        private void btn_CapNhat_Click(object sender, EventArgs e)
+        {
+            if (txt_GiaMenuChiNhanh.Text == "")
+            {
+                MessageBox.Show("Xin hãy chọn món ăn để cập nhật!!", "Attentions");
+            }
+            else
+            {
+                MessageBoxButtons buttons = MessageBoxButtons.YesNo;
+                DialogResult result;
+                result = MessageBox.Show("Bạn có muốn sửa lại giá món ăn", "Notice!!", buttons);
+                if (result == DialogResult.Yes)
+                {
+                    provider.Connect();
+                    string sql = "sp_UpdateGia";
+                    provider.ExecuteNonQuery(CommandType.StoredProcedure, sql, new SqlParameter { ParameterName = "@ID", Value = ID.ToString() },
+                                                                               new SqlParameter { ParameterName = "@IDMenu", Value = txt_IDMenu.Text },
+                                                                               new SqlParameter { ParameterName = "@Gia", Value = txt_GiaMenuChiNhanh.Text });
+
+                    //Cập nhật lại menu chi nhánh
+                    for (int i = 0; i < dataGridView_ChiNhanh.Columns.Count; i++)
+                    {
+                        if (dataGridView_ChiNhanh.Rows[i].Cells[0].Value.ToString() == txt_IDMenu.Text)
+                        {
+                            dataGridView_ChiNhanh.Rows[i].Cells[3].Value = txt_GiaMenuChiNhanh.Text;
+                        }
+                    }
+                    MessageBox.Show("Cập nhật thành công", "Attention");
+                    txt_Danhmuc.Clear();
+                    txt_Gia.Clear();
+                    txt_Ten.Clear();
+                }
+            }
+        }
+
+        //Button Xóa món ăn menu chi nhánh
+        private void btn_Xoa_Click(object sender, EventArgs e)
+        {
+            if (txt_GiaMenuChiNhanh.Text == "" || txt_DanhMucMenuChiNhanh.Text == "" || txt_TenMenuChiNhanh.Text == "")
+            {
+                MessageBox.Show("Xin hãy chọn món ăn để xóa");
+            }
+            else
+            {
+                MessageBoxButtons buttons = MessageBoxButtons.YesNo;
+                DialogResult result;
+                result = MessageBox.Show("Bạn có muốn xóa?", "Attention!!", buttons);
+                if (result == DialogResult.Yes)
+                {
+                    string sql = "sp_DelMenuChiNhanh";
+                    provider.Connect();
+                    provider.ExecuteNonQuery(CommandType.StoredProcedure, sql, new SqlParameter { ParameterName = "@ID", Value = ID.ToString() },
+                                                                               new SqlParameter { ParameterName = "@IDMenu", Value = txt_IDMenu.Text });
+
+                    //Cập nhật lại menu chi nhánh
+                    for (int i = 0; i < dataGridView_ChiNhanh.Columns.Count; i++)
+                    {
+                        if (dataGridView_ChiNhanh.Rows[i].Cells[0].Value.ToString() == txt_IDMenu.Text)
+                        {
+                            tableChiNhanh.Rows[i].Delete();
+                        }
+                    }
+                    MessageBox.Show("Xóa thành công", "Attention");
+                    txt_Danhmuc.Clear();
+                    txt_Gia.Clear();
+                    txt_Ten.Clear();
+                }
+            }
+        }
+    }
+}
