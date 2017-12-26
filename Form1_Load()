@@ -1,84 +1,207 @@
  public partial class Form1 : Form
 {
-    private DataTable dsMan; 
+    private DataTable dsMan;
     private DataTable dsChiNhanh;
+    private DataTable DonHang;
+    private DataTable tableChiNhanh;
     private DataTable BaoCaoDonHang;
     private DataTable ChiTietDonHang;
+    private DataTable BaoCaoMonAn;
+    private DataTable KhachHang;
+    private DataTable ChiPhiPhatSinh;
     private DataView data_view;
+    private int Access = 0;
+    private string TenNhanVien;
+    private int IDDonHang = 0;
+    private int IDMenu = 0;
+    private int IDChiNhanh = 0;
+    private int IDKhachHang = 0;
+    private int IDChiPhiPhatSinh = 0; 
+    string Day = DateTime.Now.Day.ToString();
+    string Month = DateTime.Now.Month.ToString();
+    string Year = DateTime.Now.Year.ToString();
     private Provider provider = new Provider();
     private void Form1_Load(object sender, EventArgs e)
-    {
-           //Menu
-            dsMan = new DataTable();
-            dsMan.Columns.Add("ID");
-            dsMan.Columns.Add("Tên");
-            dsMan.Columns.Add("Danh m?c");
-            dsMan.Columns.Add("Giá");
-            string strSql = "Select * From MonAn";
-            provider.Connect();
-            dsMan = provider.Select(CommandType.Text, strSql);
-            data_view = new DataView(dsMan);
-            dataGridView2.DataSource = data_view;
-            dataGridView2.ReadOnly = true;
+        {
+                //Menu
+                dsMan = new DataTable();
+                dsMan.Columns.Add("ID");
+                dsMan.Columns.Add("Tên");
+                dsMan.Columns.Add("Danh mục");
+                dsMan.Columns.Add("Giá");
+                string strSql = "Select * From MonAn";
+                provider.Connect();
+                dsMan = provider.Select(CommandType.Text, strSql);
+                data_view = new DataView(dsMan);
+                dataGridView2.DataSource = data_view;
+                dataGridView2.ReadOnly = true;
 
-            //Combobox Menu
-            cbbox_Danhmuc.Items.Add("T?t c?");
-            SqlDataReader reader = provider.GetReader(CommandType.Text, "SELECT Danhmuc FROM MonAn");
-            while (reader.Read())
-            {
-                cbbox_Danhmuc.Items.Add(reader[0]);
-            }
-            for (int i = 0; i < cbbox_Danhmuc.Items.Count; i++)
-            {
-                for (int j = i + 1; j < cbbox_Danhmuc.Items.Count; j++)
+                //Combobox Menu
+                cbbox_Danhmuc.Items.Add("Tất cả");
+                SqlDataReader reader = provider.GetReader(CommandType.Text, "SELECT Danhmuc FROM MonAn");
+                while (reader.Read())
                 {
-                    if (cbbox_Danhmuc.Items[i].Equals(cbbox_Danhmuc.Items[j].ToString()))
+                    cbbox_Danhmuc.Items.Add(reader[0]);
+                }
+                for (int i = 0; i < cbbox_Danhmuc.Items.Count; i++)
+                {
+                    for (int j = i + 1; j < cbbox_Danhmuc.Items.Count; j++)
                     {
-                        cbbox_Danhmuc.Items.RemoveAt(j);
+                        if (cbbox_Danhmuc.Items[i].Equals(cbbox_Danhmuc.Items[j].ToString()))
+                        {
+                            cbbox_Danhmuc.Items.RemoveAt(j);
+                        }
                     }
                 }
-            }
-            provider.Disconnect();
-         //Chi nhánh
-            Provider provider1 = new Provider();
-            provider1.Connect();
-            SqlDataReader readerr = provider1.GetReader(CommandType.Text, "SELECT TenChiNhanh FROM ChiNhanh");
-            while (readerr.Read())
-            {
-                cbbox_ChiNhanh.Items.Add(readerr[0]);
-            }
-            provider1.Disconnect();
-        //Báo cáo
-        //Combobox Month trong báo cáo
-        for(int i = 0; i < 12; i++)
-        {
-            cbbox_Month.Items.Add(i + 1);
-        }
+                provider.Disconnect();
+                //Chi nhánh
+                Provider provider1 = new Provider();
+                provider1.Connect();
+                SqlDataReader readerr = provider1.GetReader(CommandType.Text, "SELECT TenChiNhanh FROM ChiNhanh");
+                while (readerr.Read())
+                {
+                    cbbox_ChiNhanh.Items.Add(readerr[0]);
+                }
+                provider1.Disconnect();
 
-        //Báo cáo đơn hàng
-        BaoCaoDonHang = new DataTable();
-        BaoCaoDonHang.Columns.Add("ID Đơn hàng");
-        BaoCaoDonHang.Columns.Add("ID Chi nhánh");
-        BaoCaoDonHang.Columns.Add("Tổng tiền");
-        BaoCaoDonHang.Columns.Add("Ngày");
-        data_view = new DataView(BaoCaoDonHang);
-        dataGridView_BaoCaoDonHang.DataSource = data_view;
-        dataGridView_DonHang.ReadOnly = true;
-        
-        //Chi tiết đơn hàng
-        ChiTietDonHang = new DataTable();
-        ChiTietDonHang.Columns.Add("ID Đơn hàng");//Ẩn
-        ChiTietDonHang.Columns.Add("ID Chi nhánh");//Ẩn
-        ChiTietDonHang.Columns.Add("Tên món ăn");//IDMenu
-        ChiTietDonHang.Columns.Add("Số bàn");
-        ChiTietDonHang.Columns.Add("Số lượng");
-        ChiTietDonHang.Columns.Add("Giá");
-        ChiTietDonHang.Columns.Add("Ngày");//Ẩn
-        data_view = new DataView(ChiTietDonHang);
-        dataGridView_ChiTietDonHang.DataSource = data_view;
-        dataGridView_ChiTietDonHang.Columns[0].Visible = false;
-        dataGridView_ChiTietDonHang.Columns[1].Visible = false;
-        dataGridView_ChiTietDonHang.Columns[6].Visible = false;
-        dataGridView_ChiTietDonHang.ReadOnly = true;
-    }
-}
+                //Đơn hàng
+                txt_Date.Text = Month + "/" + Day + "/" + Year;
+
+                //Combobox Danh muc chi nhánh
+                cbbox_DanhMucChiNhanh.Items.Add("Tất cả");
+                Provider provider3 = new Provider();
+                provider3.Connect();
+                SqlDataReader reader4 = provider3.GetReader(CommandType.Text, "SELECT Danhmuc FROM MonAn");
+                while (reader4.Read())
+                {
+                    cbbox_DanhMucChiNhanh.Items.Add(reader4[0]);
+                }
+                for (int i = 0; i < cbbox_DanhMucChiNhanh.Items.Count; i++)
+                {
+                    for (int j = i + 1; j < cbbox_DanhMucChiNhanh.Items.Count; j++)
+                    {
+                        if (cbbox_DanhMucChiNhanh.Items[i].Equals(cbbox_DanhMucChiNhanh.Items[j].ToString()))
+                        {
+                            cbbox_DanhMucChiNhanh.Items.RemoveAt(j);
+                        }
+                    }
+                }
+                provider3.Disconnect();
+
+                //Đơn hàng trong đơn hàng
+                DonHang = new DataTable();
+                DonHang.Columns.Add("ID Menu");
+                DonHang.Columns.Add("Tên món ăn");
+                DonHang.Columns.Add("Số bàn");
+                DonHang.Columns.Add("Số lượng");
+                DonHang.Columns.Add("Giá");
+                DonHang.Columns.Add("Ghi chú");
+                data_view = new DataView(DonHang);
+                dataGridView_DonHang.DataSource = data_view;
+                dataGridView_DonHang.ReadOnly = true;
+                dataGridView_DonHang.Columns[0].Visible = false;
+
+                //Menu chi nhánh trong đơn hàng
+                tableChiNhanh = new DataTable();
+                tableChiNhanh.Columns.Add("ID");
+                tableChiNhanh.Columns.Add("Tên");
+                tableChiNhanh.Columns.Add("Danh mục");
+                tableChiNhanh.Columns.Add("Giá");
+
+                provider.Connect();
+                SqlDataReader reader3 = provider.GetReader(CommandType.Text, "SELECT * FROM ChiNhanh");
+                while (reader3.Read())
+                {
+                    if (reader3[0].ToString() == Access.ToString())
+                    {
+                        txt_TenChiNhanhDonHang.Text = reader3[1].ToString();
+                        txt_DiaChiDonHang.Text = reader3[2].ToString();
+                        provider3.Connect();
+                        SqlDataReader reader1 = provider3.GetReader(CommandType.Text, "SELECT * FROM MenuChiNhanh");
+                        while (reader1.Read())
+                        {
+                            {
+                                Provider provider2 = new Provider();
+                                provider2.Connect();
+                                SqlDataReader reader2 = provider2.GetReader(CommandType.Text, "SELECT * FROM MonAn");
+                                while (reader2.Read())
+                                {
+                                    if (reader1[1].ToString() == reader2[0].ToString() && reader3[0].ToString() == reader1[0].ToString())
+                                    {
+                                        DataRow row = tableChiNhanh.NewRow();
+                                        row[0] = reader2[0];
+                                        row[1] = reader2[1];
+                                        row[2] = reader2[2];
+                                        row[3] = reader1[2];
+                                        tableChiNhanh.Rows.Add(row);
+                                    }
+                                }
+                                provider2.Disconnect();
+                            }
+                        }
+                        provider3.Disconnect();
+                    }
+                }
+                data_view = new DataView(tableChiNhanh);
+                dataGridView_MenuChiNhanh.DataSource = data_view;
+                dataGridView_MenuChiNhanh.Columns[0].Visible = false;
+                dataGridView_MenuChiNhanh.ReadOnly = true;
+                provider.Disconnect();
+
+                //Báo cáo
+                //Combobox Month trong báo cáo
+                for (int i = 0; i < 12; i++)
+                {
+                    cbbox_Month.Items.Add(i + 1);
+                }
+
+                //Combobox Báo cáo
+                cbbox_BaoCao.Items.Add("Đơn hàng");
+                cbbox_BaoCao.Items.Add("Món ăn");
+                cbbox_BaoCao.Items.Add("Chi phí phát sinh");
+
+                //Combobox Chi nhánh trong báo cáo
+                provider1.Connect();
+                SqlDataReader readerrr = provider1.GetReader(CommandType.Text, "SELECT TenChiNhanh FROM ChiNhanh");
+                cbbox_BaoCaoChiNhanh.Items.Add("Tất cả");
+                while (readerrr.Read())
+                {
+                    cbbox_BaoCaoChiNhanh.Items.Add(readerrr[0]);
+                }
+                provider1.Disconnect();
+
+                //Textbox năm trong khách hàng
+                txt_NamKhachHang.Text = Year;
+                //Khách hàng
+                provider.Connect();
+                KhachHang = new DataTable();
+                KhachHang.Columns.Add("ID khách hàng");
+                KhachHang.Columns.Add("Tên khách hàng");
+                KhachHang.Columns.Add("Địa chỉ");
+                KhachHang.Columns.Add("Số điện thoại");
+                KhachHang.Columns.Add("Tổng tiền");
+
+                KhachHang = provider.Select(CommandType.Text, "SELECT * FROM KhachHang");
+                data_view = new DataView(KhachHang);
+                dataGridView_KhachHang.DataSource = data_view;
+                dataGridView_KhachHang.ReadOnly = true;
+                provider.Disconnect();
+
+            //Chi phí phát sinh
+            //Địa chỉ chi phí phát sinh
+            provider.Connect();
+            reader3 = provider.GetReader(CommandType.Text, "SELECT * FROM ChiNhanh");
+            while (reader3.Read())
+            {
+                if (reader3[0].ToString() == Access.ToString())
+                {
+                    txt_IDChiNhanhChiPhiPhatSinh.Text = reader3[0].ToString();
+                    txt_TenChiNhanhChiPhiPhatSinh.Text = reader3[1].ToString();
+                    txt_DiaChiChiPhiPhatSinh.Text = reader3[2].ToString();
+                    break;
+                }
+            }
+            txt_IDAccountChiPhiPhatSinh.Text = TenNhanVien;
+            txt_NgayChiPhiPhatSinh.Text = Month + "/" + Day + "/" + Year;
+            provider.Disconnect();
+        }
