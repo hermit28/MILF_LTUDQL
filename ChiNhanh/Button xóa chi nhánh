@@ -17,7 +17,7 @@
                         string sql = "sp_DelChiNhanh";
                         provider.Connect();
                         provider.ExecuteNonQuery(CommandType.StoredProcedure, sql, new SqlParameter { ParameterName = "@ID", Value = txt_IDChiNhanh.Text });
-                        dsChiNhanh = provider.Select(CommandType.Text, "SELECT * FROM MonAn");
+                        dsChiNhanh = provider.select(CommandType.Text, "SELECT * FROM ChiNhanh");
                         data_view = new DataView(dsChiNhanh);
                         dataGridView_ChiNhanh.DataSource = data_view;
                         provider.Disconnect();
