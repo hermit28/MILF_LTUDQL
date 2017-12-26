@@ -1,0 +1,13 @@
+//Button Dang xuat
+        private void btn_DangXuat_Click(object sender, EventArgs e)
+        {
+            MessageBoxButtons buttons = MessageBoxButtons.YesNo;
+            DialogResult result;
+            result = MessageBox.Show("B?n có mu?n dang xu?t?", "Attention!!", buttons);
+            if (result == DialogResult.Yes)
+            {
+                this.Close();
+                Form3 form3 = new Form3();
+                form3.Show();
+            }
+        }
