@@ -1,0 +1,161 @@
+//Button Thanh toán
+        private void btn_ThanhToan_Click(object sender, EventArgs e)
+        {
+            if (Access == 0)
+            {
+                MessageBox.Show("B?n không ph?i nhân viên c?a quán");
+            }
+            else
+            {
+                if (dataGridView_DonHang.Rows[0].Cells[0].Value == null)
+                {
+                    MessageBox.Show("Hãy thêm món an d? thanh toán");
+                }
+                else
+                {
+                    MessageBoxButtons buttons = MessageBoxButtons.YesNo;
+                    DialogResult result;
+                    result = MessageBox.Show("B?n có mu?n thanh toán hóa don?", "Attention!!", buttons);
+                    if (result == DialogResult.Yes)
+                    {
+                        if (txt_IDKhachHang.Text != "")
+                        {
+                            provider.Connect();
+                            string sql1 = "sp_FindKhachHang";
+                            SqlParameter output = new SqlParameter("@Output", SqlDbType.VarChar, 10);
+                            output.Direction = ParameterDirection.Output;
+                            provider.ExecuteNonQuery(CommandType.StoredProcedure, sql1, new SqlParameter { ParameterName = "@ID", Value = txt_IDKhachHang.Text }, output);
+                            if (output.Value.ToString() == 0.ToString())
+                            {
+                                MessageBox.Show("Không tìm th?y khách hàng!! Xin vui lòng dang ký!!");
+                                provider.Disconnect();
+                            }
+                            else
+                            {
+                                int Tong = 0;
+                                DataRow row = DonHang.NewRow();
+                                for (int i = 0; i < DonHang.Rows.Count; i++)
+                                {
+                                    row = DonHang.Rows[i];
+                                    for (int j = DonHang.Rows.Count - 1; j > i; j--)
+                                    {
+                                        DataRow row2 = DonHang.Rows[j];
+                                        if (row[0].ToString() == row2[0].ToString())
+                                        {
+                                            row[3] = int.Parse(row[3].ToString()) + int.Parse(row2[3].ToString());
+                                            row[4] = int.Parse(row[4].ToString()) + int.Parse(row2[4].ToString());
+                                            DonHang.Rows[j].Delete();
+                                        }
+                                    }
+                                    Tong += int.Parse(row[4].ToString());
+                                    txt_TongCong.Text = Tong.ToString();
+                                }
+                                provider.Disconnect();
+                                provider.Connect();
+                                string sql = "sp_AddDonHang";
+                                string sqll = "sp_AddChiTietDonHang";
+                                string sqlll = "sp_KhachMuaHang";
+                                SqlDataReader reader = provider.GetReader(CommandType.Text, "SELECT * FROM DonHang");
+                                while (reader.Read())
+                                {
+                                    IDDonHang = int.Parse(reader[0].ToString());
+                                }
+                                IDDonHang++;
+                                Provider provider1 = new Provider();
+                                provider1.Connect();
+                                //Add don hàng
+                                provider1.ExecuteNonQuery(CommandType.StoredProcedure, sql, new SqlParameter { ParameterName = "@ID", Value = IDDonHang.ToString() },
+                                                                                            new SqlParameter { ParameterName = "@IDChiNhanh", Value = Access.ToString() },
+                                                                                            new SqlParameter { ParameterName = "@IDKhachHang", Value = txt_IDKhachHang.Text },
+                                                                                            new SqlParameter { ParameterName = "@Ngay", Value = Day },
+                                                                                            new SqlParameter { ParameterName = "@Thang", Value = Month },
+                                                                                            new SqlParameter { ParameterName = "@Nam", Value = Year },
+                                                                                            new SqlParameter { ParameterName = "@TongCong", Value = txt_TongCong.Text });
+
+                                //Add Chi ti?t don hàng
+                                for (int i = 0; i < DonHang.Rows.Count; i++)
+                                {
+                                    row = DonHang.Rows[i];
+                                    provider1.ExecuteNonQuery(CommandType.StoredProcedure, sqll, new SqlParameter { ParameterName = "@ID", Value = IDDonHang.ToString() },
+                                                                                                 new SqlParameter { ParameterName = "@IDChiNhanh", Value = Access.ToString() },
+                                                                                                 new SqlParameter { ParameterName = "@IDMenu", Value = row[0].ToString() },
+                                                                                                 new SqlParameter { ParameterName = "@SoBan", Value = row[2].ToString() },
+                                                                                                 new SqlParameter { ParameterName = "@SoLuong", Value = row[3].ToString() },
+                                                                                                 new SqlParameter { ParameterName = "@Gia", Value = row[4].ToString() },
+                                                                                                 new SqlParameter { ParameterName = "@Ngay", Value = Day },
+                                                                                                 new SqlParameter { ParameterName = "@Thang", Value = Month },
+                                                                                                 new SqlParameter { ParameterName = "@Nam", Value = Year });
+                                }
+                                //Add khách mua hàng
+                                if (txt_IDKhachHang.Text != "")
+                                {
+                                    provider1.ExecuteNonQuery(CommandType.StoredProcedure, sqlll, new SqlParameter { ParameterName = "@ID", Value = txt_IDKhachHang.Text },
+                                                                                                  new SqlParameter { ParameterName = "@Tongtien", Value = txt_TongCong.Text });
+                                }
+                                provider.Disconnect();
+                                provider1.Disconnect();
+                            }
+                        }
+                        else if (txt_IDKhachHang.Text == "")
+                        {
+                            txt_IDKhachHang.Text = 3.ToString();
+                            int Tong = 0;
+                            DataRow row = DonHang.NewRow();
+                            for (int i = 0; i < DonHang.Rows.Count; i++)
+                            {
+                                row = DonHang.Rows[i];
+                                for (int j = DonHang.Rows.Count - 1; j > i; j--)
+                                {
+                                    DataRow row2 = DonHang.Rows[j];
+                                    if (row[0].ToString() == row2[0].ToString())
+                                    {
+                                        row[3] = int.Parse(row[3].ToString()) + int.Parse(row2[3].ToString());
+                                        row[4] = int.Parse(row[4].ToString()) + int.Parse(row2[4].ToString());
+                                        DonHang.Rows[j].Delete();
+                                    }
+                                }
+                                Tong += int.Parse(row[4].ToString());
+                                txt_TongCong.Text = Tong.ToString();
+                            }
+                            provider.Connect();
+                            string sql = "sp_AddDonHang";
+                            string sqll = "sp_AddChiTietDonHang";
+                            SqlDataReader reader = provider.GetReader(CommandType.Text, "SELECT * FROM DonHang");
+                            while (reader.Read())
+                            {
+                                IDDonHang = int.Parse(reader[0].ToString());
+                            }
+                            IDDonHang++;
+                            Provider provider1 = new Provider();
+                            provider1.Connect();
+                            //Add don hàng
+                            provider1.ExecuteNonQuery(CommandType.StoredProcedure, sql, new SqlParameter { ParameterName = "@ID", Value = IDDonHang.ToString() },
+                                                                                        new SqlParameter { ParameterName = "@IDChiNhanh", Value = Access.ToString() },
+                                                                                        new SqlParameter { ParameterName = "@IDKhachHang", Value = txt_IDKhachHang.Text },
+                                                                                        new SqlParameter { ParameterName = "@Ngay", Value = Day },
+                                                                                        new SqlParameter { ParameterName = "@Thang", Value = Month },
+                                                                                        new SqlParameter { ParameterName = "@Nam", Value = Year },
+                                                                                        new SqlParameter { ParameterName = "@TongCong", Value = txt_TongCong.Text });
+
+                            //Add Chi ti?t don hàng
+                            for (int i = 0; i < DonHang.Rows.Count; i++)
+                            {
+                                row = DonHang.Rows[i];
+                                provider1.ExecuteNonQuery(CommandType.StoredProcedure, sqll, new SqlParameter { ParameterName = "@ID", Value = IDDonHang.ToString() },
+                                                                                             new SqlParameter { ParameterName = "@IDChiNhanh", Value = Access.ToString() },
+                                                                                             new SqlParameter { ParameterName = "@IDMenu", Value = row[0].ToString() },
+                                                                                             new SqlParameter { ParameterName = "@SoBan", Value = row[2].ToString() },
+                                                                                             new SqlParameter { ParameterName = "@SoLuong", Value = row[3].ToString() },
+                                                                                             new SqlParameter { ParameterName = "@Gia", Value = row[4].ToString() },
+                                                                                             new SqlParameter { ParameterName = "@Ngay", Value = Day },
+                                                                                             new SqlParameter { ParameterName = "@Thang", Value = Month },
+                                                                                             new SqlParameter { ParameterName = "@Nam", Value = Year });
+                            }
+                            provider.Disconnect();
+                            provider1.Disconnect();
+                        }
+                        MessageBox.Show("Thanh toán thành công!!");
+                    }
+                }
+            }
+        }
